@@ -1,10 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
-    Button,
     Image,
-    Platform,
     SafeAreaView,
-    StatusBar,
     StyleSheet,
     Text,
     TextInput,
@@ -12,25 +9,20 @@ import {
     TouchableOpacity,
     View
 } from 'react-native';
-import {
-    setCustomText,
-} from 'react-native-global-props';
-
-import CheckBox from '@react-native-community/checkbox'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-export default function App() { 
-    setCustomText({style: {
-        fontSize: 16,
-        fontFamily: 'Roboto',
-        color: '#000',
-    }})
+import CheckBox from '@react-native-community/checkbox'
+
+import { AuthContext } from '../scripts/context';
+
+export default function Login() {
+    const { login } = useContext(AuthContext);
 
     return (
         <SafeAreaView style={styles.screen}>
             {/* <BoxShadow setting={styles.logoShadow}> */}
                 <Image
-                    source={require('./apps/assets/images/logo.png')}
+                    source={require('../assets/images/logo.png')}
                     style={styles.logo}
                 />
             {/* </BoxShadow> */}
@@ -75,7 +67,7 @@ export default function App() {
             <Text style={styles.warning} numberOfLines={2}>
                 Tên đăng nhập hoặc mật khẩu của bạn không hợp lệ
             </Text>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} activeOpacity={0.6} onPress={login}>
                 <Text style = {styles.labelButton}>
                     ĐĂNG NHẬP
                 </Text>

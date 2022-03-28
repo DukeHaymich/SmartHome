@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
+    Button,
     FlatList,
     Platform,
     SafeAreaView,
@@ -9,13 +10,51 @@ import {
     View
 } from 'react-native';
 
+import MqttService from '../core/services/MqttService';
+
+import Header from '../components/Header';
+import Card from '../components/Card';
 
 
-import Header from './apps/components/Header';
-import Card from './apps/components/Card';
+
+export default function Dashboard() {
+    const [ state, setState ] = useState({
+        isConnected: false,
+        message: '',
+    });
+    
+    const onTopic = message => {
+        console.log(message);
+    }
+
+    const onSubscribe = () => {
+    }
+
+    const onPublish = () => {
+        MqttService.publishMessage("encrypted/olo/1", "Hello from the app");
+    }
+    
+    const mqttSuccessHandler = () => {
+        MqttService.subscribe('encrypted/olo/1', onTopic);
+    };
+    
+    const mqttConnectionLostHandler = () => {
+        
+    };
+    
+    useEffect(() => {
+        if (MqttService && MqttService.isConnected) {
+            MqttService.disconnectClient();
+        }
+        if (MqttService && !MqttService.isConnected) {
+            MqttService.connectClient(
+                mqttSuccessHandler,
+                mqttConnectionLostHandler
+            );
+        }
+    }, []);
 
 
-export default function App() {
     const [ listDevices, setListDevices ] = useState([
         {
             id: 1,
@@ -43,57 +82,25 @@ export default function App() {
         },
         {
             id: 3,
-            title: 'Hệ thống chống trộm',
+            title: 'Nồng độ khí gas',
             content: [
                 {
-                    icon: 'notifications',
-                    description: 'Bình thường'
-                },
-                {
                     icon: 'lock-outline',
-                    description: 'Đang hoạt động'
+                    description: '1.0% (Bình thường)'
                 }
             ]
         },
         {
             id: 4,
-            title: 'Hệ thống chống trộm',
+            title: 'Nhiệt độ và độ ẩm',
             content: [
                 {
                     icon: 'notifications',
-                    description: 'Bình thường'
+                    description: '29°C'
                 },
                 {
                     icon: 'lock-outline',
-                    description: 'Đang hoạt động'
-                }
-            ]
-        },
-        {
-            id: 5,
-            title: 'Hệ thống chống trộm',
-            content: [
-                {
-                    icon: 'notifications',
-                    description: 'Bình thường'
-                },
-                {
-                    icon: 'lock-outline',
-                    description: 'Đang hoạt động'
-                }
-            ]
-        },
-        {
-            id: 6,
-            title: 'Hệ thống chống trộm',
-            content: [
-                {
-                    icon: 'notifications',
-                    description: 'Bình thường'
-                },
-                {
-                    icon: 'lock-outline',
-                    description: 'Đang hoạt động'
+                    description: '7%'
                 }
             ]
         }
@@ -107,11 +114,9 @@ export default function App() {
                     data={listDevices}
                     renderItem={({item}) => <Card {...item}/>}
                     keyExtractor={item => item.id}
+                    contentContainerStyle={{ paddingBottom: 17 }}
                 />
             </View>
-            {/* <Text>
-                Hello world!
-            </Text> */}
         </SafeAreaView>
     );
 }
@@ -121,8 +126,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         paddingTop: Platform.OS === 'ios' ? StatusBar.currentHeight : 0,
-        // justifyContent: 'center',
-        // alignItems: 'center',
     },
     listCard: {
         flex: 1,

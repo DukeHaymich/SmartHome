@@ -1,99 +1,46 @@
-import React, { useState } from 'react';
-import {
-    FlatList,
-    Platform,
-    SafeAreaView,
-    StatusBar,
-    StyleSheet,
-    Text,
-    View
-} from 'react-native';
+import React, { useMemo, useState } from 'react';
+import { setCustomText } from 'react-native-global-props';
+import { NavigationContainer } from '@react-navigation/native';
+import { LogBox } from 'react-native';
+
+import LoginStack from './apps/routes/LoginStack';
+import Drawer from './apps/routes/MenuDrawer';
+import { AuthContext } from './apps/scripts/context';
 
 
-
-import Header from './apps/components/Header';
-import Card from './apps/components/Card';
-
+LogBox.ignoreLogs([
+  "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
+]);
 
 export default function App() {
-    const [ listDevices, setListDevices ] = useState([
-        {
-            id: 1,
-            title: 'Khóa cửa',
-            content: [
-                {
-                    icon: 'lock-outline',
-                    description: 'Đang đóng'
-                }
-            ]
-        },
-        {
-            id: 2,
-            title: 'Hệ thống chống trộm',
-            content: [
-                {
-                    icon: 'notifications',
-                    description: 'Bình thường'
-                },
-                {
-                    icon: 'lock-outline',
-                    description: 'Đang hoạt động'
-                }
-            ]
-        },
-        {
-            id: 3,
-            title: 'Nồng độ khí gas',
-            content: [
-                {
-                    icon: 'lock-outline',
-                    description: '1.0% (Bình thường)'
-                }
-            ]
-        },
-        {
-            id: 4,
-            title: 'Nhiệt độ và độ ẩm',
-            content: [
-                {
-                    icon: 'notifications',
-                    description: '29°C'
-                },
-                {
-                    icon: 'lock-outline',
-                    description: '7%'
-                }
-            ]
+    setCustomText({style: {
+        fontSize: 16,
+        fontFamily: 'Roboto',
+        color: '#000',
+    }});
+
+    const [ isKeepLoggedIn, setIsKeepLoggedIn ] = useState(false);
+
+    //*** Contexts ***//
+    const authContext = useMemo(() => {
+        return {
+            login: () => {
+                setIsKeepLoggedIn(true);
+            },
+            logout: () => {
+                setIsKeepLoggedIn(false);
+            }
         }
-    ]);
+    }, [])
 
     return (
-        <SafeAreaView style={styles.container}>
-            <Header title='Trang nhà'/>
-            <View style={styles.listCard}>
-                <FlatList
-                    data={listDevices}
-                    renderItem={({item}) => <Card {...item}/>}
-                    keyExtractor={item => item.id}
-                    contentContainerStyle={{ paddingBottom: 17 }}
-                />
-            </View>
-            {/* <Text>
-                Hello world!
-            </Text> */}
-        </SafeAreaView>
+        <AuthContext.Provider value={authContext}>
+            <NavigationContainer>
+                { isKeepLoggedIn
+                ? <Drawer/>
+                : <LoginStack/>
+                }
+            </NavigationContainer>
+        </AuthContext.Provider>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingTop: Platform.OS === 'ios' ? StatusBar.currentHeight : 0,
-        // justifyContent: 'center',
-        // alignItems: 'center',
-    },
-    listCard: {
-        flex: 1,
-    }
-});
