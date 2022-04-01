@@ -17,8 +17,8 @@ class MqttService {
     constructor() {
         const clientId = uuid.v4().slice(0, 23);
         this.client = new Paho.MQTT.Client(
-            'broker.mqttdashboard.com',
-            8000,
+            'io.adafruit.com',
+            443,
             clientId
         );
         this.client.onMessageArrived = this.onMessageArrived;
@@ -28,7 +28,9 @@ class MqttService {
         this.isConnected = false;
     }   
 
-    connectClient = (onSuccessHandler, onConnectionLostHandler) => {
+    connectClient = (username, password, onSuccessHandler, onConnectionLostHandler) => {
+        this.username = username,
+        this.password = password
         this.onSuccessHandler = onSuccessHandler;
         this.onConnectionLostHandler = onConnectionLostHandler;
         this.client.onConnectionLost = () => {
@@ -42,11 +44,13 @@ class MqttService {
                 this.isConnected = true;
                 onSuccessHandler();
             },
-            useSSL:false,
+            useSSL:true,
             onFailure:this.onFailure,
             reconnect:true,
             keepAliveInterval:20,
             cleanSession:true,
+            userName: username,
+            password: password
         });
     };
 
@@ -56,6 +60,7 @@ class MqttService {
             return;
         }
         this.client.disconnect();
+        this.isConnected=false;
     }
 
     onFailure = ({ errorMessage }) => {
@@ -66,7 +71,7 @@ class MqttService {
             'Could not connect to MQTT',
             [{
                 text: 'TRY AGAIN',
-                onPress: () => this.connectClient(this.onSuccessHandler, this.onConnectionLostHandler)
+                onPress: () => this.connectClient(this.username, this.password, this.onSuccessHandler, this.onConnectionLostHandler)
             }],
             { cancelable: false }
         );

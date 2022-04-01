@@ -24,6 +24,7 @@ export default function Dashboard() {
     });
     
     const onTopic = message => {
+        console.info('success');
         console.log(message);
     }
 
@@ -31,11 +32,14 @@ export default function Dashboard() {
     }
 
     const onPublish = () => {
-        MqttService.publishMessage("encrypted/olo/1", "Hello from the app");
+        MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate', '0');
     }
     
     const mqttSuccessHandler = () => {
-        MqttService.subscribe('encrypted/olo/1', onTopic);
+        MqttService.subscribe('duke_and_co/feeds/visual_iGas', onTopic);
+        MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onTopic);
+        MqttService.publishMessage('duke_and_co/feeds/visual_iGas/get', 'duke_n_co');
+        
     };
     
     const mqttConnectionLostHandler = () => {
@@ -48,6 +52,8 @@ export default function Dashboard() {
         }
         if (MqttService && !MqttService.isConnected) {
             MqttService.connectClient(
+                'duke_and_co',
+                'aio_ZFsO59HAQ3V4ZGXzsKHyeG0yLZPH',
                 mqttSuccessHandler,
                 mqttConnectionLostHandler
             );
@@ -117,6 +123,10 @@ export default function Dashboard() {
                     contentContainerStyle={{ paddingBottom: 17 }}
                 />
             </View>
+            <Button
+                title='click me'
+                onPress={onPublish}
+            />
         </SafeAreaView>
     );
 }
