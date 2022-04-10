@@ -7,7 +7,7 @@ const stack = createNativeStackNavigator();
 
 export default function LoginStack() {
     return (
-        <stack.Navigator>
+        <stack.Navigator screenOptions={{ headerShown: false }}>
             <stack.Screen
                 name='Login'
                 component={Login}

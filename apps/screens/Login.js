@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import {
     Image,
     SafeAreaView,
@@ -16,7 +16,16 @@ import CheckBox from '@react-native-community/checkbox'
 import { AuthContext } from '../scripts/context';
 
 export default function Login() {
-    const { login } = useContext(AuthContext);
+    const { authDispatch } = useContext(AuthContext);
+
+    const onRememberMeHandler = () => {
+        authDispatch({type: 'REMEMBER-ME'});
+    }
+
+    const onLoginHandler = () => {
+        authDispatch({type: 'LOG-IN'});
+    }
+
 
     return (
         <SafeAreaView style={styles.screen}>
@@ -55,19 +64,26 @@ export default function Login() {
             {/* <CheckBox
                 disabled = {false}
             /> */}
-            <View style = {styles.checkBoxContainer}>
+            <TouchableOpacity 
+                style={styles.checkBoxContainer}
+                onPress={onRememberMeHandler}>
+
                 <CheckBox
                     disabled={false}
-                    // value={toggleCheckBox}
+                    value={false}
                     // onValueChange={(newValue) => setToggleCheckBox(newValue)}
                     style = {styles.checkBox}
                 />
                 <Text style = {styles.label}>Nhớ mật khẩu</Text>
-            </View>
+            </TouchableOpacity>
             <Text style={styles.warning} numberOfLines={2}>
                 Tên đăng nhập hoặc mật khẩu của bạn không hợp lệ
             </Text>
-            <TouchableOpacity style={styles.button} activeOpacity={0.6} onPress={login}>
+            <TouchableOpacity
+                style={styles.button}
+                activeOpacity={0.6}
+                onPress={onLoginHandler}>
+
                 <Text style = {styles.labelButton}>
                     ĐĂNG NHẬP
                 </Text>

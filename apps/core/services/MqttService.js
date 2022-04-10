@@ -21,6 +21,8 @@ class MqttService {
             443,
             clientId
         );
+        this.username = 'duke_and_co',
+        this.password = 'aio_FBlS171kI4CuXJbYPzIX2a32wzMW'
         this.client.onMessageArrived = this.onMessageArrived;
         this.callbacks = {};
         this.onSuccessHandler = undefined;
@@ -28,9 +30,7 @@ class MqttService {
         this.isConnected = false;
     }   
 
-    connectClient = (username, password, onSuccessHandler, onConnectionLostHandler) => {
-        this.username = username,
-        this.password = password
+    connect = (onSuccessHandler, onConnectionLostHandler) => {
         this.onSuccessHandler = onSuccessHandler;
         this.onConnectionLostHandler = onConnectionLostHandler;
         this.client.onConnectionLost = () => {
@@ -49,18 +49,18 @@ class MqttService {
             reconnect:true,
             keepAliveInterval:20,
             cleanSession:true,
-            userName: username,
-            password: password
+            userName: this.username,
+            password: this.password
         });
     };
 
-    disconnectClient = () => {
+    disconnect = () => {
         if (!this.isConnected) {
             // console.info('not connected');
             return;
         }
         this.client.disconnect();
-        this.isConnected=false;
+        this.isConnected = false;
     }
 
     onFailure = ({ errorMessage }) => {

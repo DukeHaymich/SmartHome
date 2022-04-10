@@ -21,21 +21,21 @@ export default function Drawer() {
             }}            
         >
             <drawer.Screen
-                name='Dashboard'
+                name='Trang nhà'
                 component={Dashboard}
                 options={{
                     drawerIcon: ({color}) => (<MaterialIcons name = 'home' size={25} color= {color}/>)
                 }}
                 />
             <drawer.Screen
-                name='Activity'
+                name='Nhật ký hoạt động'
                 component={Activity}
                 options={{
                     drawerIcon: ({color}) => (<MaterialIcons name = 'history' size={25} color= {color}/>)
                 }}
                 />
             <drawer.Screen
-                name='Account'
+                name='Tài khoản'
                 component={Account}
                 options={{
                     drawerIcon: ({color}) => (<MaterialIcons name = 'person' size={25} color= {color}/>)
