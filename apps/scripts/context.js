@@ -22,7 +22,7 @@ export default function AuthContextProvider(props) {
             case 'REMEMBER-ME':
                 return {
                     ...state,
-                    rememberMe: true
+                    rememberMe: !state.rememberMe
                 }
             default:
                 return state;

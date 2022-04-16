@@ -1,12 +1,18 @@
-import React, { useContext, useState } from 'react';
+import React, {
+    useContext,
+    useRef,
+    useState
+} from 'react';
 import {
     Image,
+    Keyboard,
     SafeAreaView,
     StyleSheet,
     Text,
     TextInput,
     TouchableHighlight,
     TouchableOpacity,
+    TouchableWithoutFeedback,
     View
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -14,9 +20,16 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import CheckBox from '@react-native-community/checkbox'
 
 import { AuthContext } from '../scripts/context';
+import { transform } from '@babel/core';
 
 export default function Login() {
-    const { authDispatch } = useContext(AuthContext);
+    const { auth, authDispatch } = useContext(AuthContext);
+    const [ isFocused, setIsFocused ] = useState({
+        username: false,
+        password: false
+    });
+    const refInputUsername = useRef();
+    const refInputPassword = useRef();
 
     const onRememberMeHandler = () => {
         authDispatch({type: 'REMEMBER-ME'});
@@ -26,8 +39,12 @@ export default function Login() {
         authDispatch({type: 'LOG-IN'});
     }
 
+    const onTextFocus = () => {
+        
+    }
 
     return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <SafeAreaView style={styles.screen}>
             {/* <BoxShadow setting={styles.logoShadow}> */}
                 <Image
@@ -37,28 +54,39 @@ export default function Login() {
             {/* </BoxShadow> */}
             <Text style = {styles.title}>SMART HOME</Text>
             <Text style = {styles.slogan}>Your choice to the future!</Text>
-            <View style = {styles.textContainer}>
+            <View style = {[styles.textContainer, (isFocused.username ? styles.textFocus : {})]}>
                 <MaterialIcons
                     name='account-circle'
-                    color='#757575'
+                    color={isFocused.username ? '#1488DB' : '#757575'}
                     size={30}
                 />
                 <TextInput
                     editable
                     placeholder='Nhập tên người dùng...'
-                    style={styles.textBox}
+                    returnKeyType='next'
+                    autoFocus={true}
+                    onSubmitEditing={() => refInputPassword.current.focus()}
+                    onFocus={() => setIsFocused((prev) => ({...prev, username: true}))}
+                    onBlur={() => setIsFocused((prev) => ({...prev, username: false}))}
+                    blurOnSubmit={false}
+                    ref={refInputUsername}
+                    style={[styles.textBox, (isFocused.username ? styles.textBoxFocus : {})]}
                 />
             </View>
-            <View style={styles.textContainer}>
+            <View style={[styles.textContainer, (isFocused.password ? styles.textFocus : {})]}>
                 <MaterialIcons
                     name='lock'
-                    color='#757575'
+                    color={isFocused.password ? '#1488DB' : '#757575'}
                     size={30}
                 />
                 <TextInput
                     editable
                     placeholder='Nhập mật khẩu...'
-                    style={styles.textBox}
+                    returnKeyType='done'
+                    ref={refInputPassword}
+                    onFocus={() => setIsFocused((prev) => ({...prev, password: true}))}
+                    onBlur={() => setIsFocused((prev) => ({...prev, password: false}))}
+                    style={[styles.textBox, (isFocused.password ? styles.textBoxFocus : {})]}
                 />
             </View>
             {/* <CheckBox
@@ -66,12 +94,13 @@ export default function Login() {
             /> */}
             <TouchableOpacity 
                 style={styles.checkBoxContainer}
-                onPress={onRememberMeHandler}>
+                onPress={onRememberMeHandler}
+                activeOpacity={1}>
 
                 <CheckBox
                     disabled={false}
-                    value={false}
-                    // onValueChange={(newValue) => setToggleCheckBox(newValue)}
+                    value={auth.rememberMe}
+                    onValueChange={() => authDispatch({type: 'REMEMBER-ME'})}
                     style = {styles.checkBox}
                 />
                 <Text style = {styles.label}>Nhớ mật khẩu</Text>
@@ -88,16 +117,17 @@ export default function Login() {
                     ĐĂNG NHẬP
                 </Text>
             </TouchableOpacity>
-            <View style = {styles.footer}>
-                <Text style = {styles.forgotPass}>Quên mật khẩu? </Text>
+            <View style={styles.footer}>
+                <Text style={styles.forgotPass}> Quên mật khẩu? </Text>
                 <TouchableHighlight>
-                    <Text style = {styles.labelFooter}>
+                    <Text style={styles.labelFooter}>
                         Lấy lại ở đây   
                     </Text>
                 </TouchableHighlight>
             </View>
-            
+
         </SafeAreaView>
+    </TouchableWithoutFeedback>
     );
 }
 
@@ -147,11 +177,20 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '80%',
         marginTop: 20,
-        borderBottomWidth: 2,
+        borderWidth: 3,
+        borderBottomWidth: 3,
         borderBottomColor: '#A4A4A4',
+        borderColor: '#fff',
+        borderRadius: 0,
         alignSelf: 'center',
         alignItems: 'center',
         paddingLeft: 10,
+    },
+    textFocus: {
+        borderColor: '#1488DB',
+        borderRadius: 5,
+        borderWidth: 3,
+        borderBottomColor: '#1488DB',
     },
     textBox: {
         flex: 1,
@@ -159,7 +198,10 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         fontStyle: 'italic',
         color: '#757575',
-        fontWeight: '500'
+        fontWeight: '500',
+    },
+    textBoxFocus: {
+        color: '#1488DB',
     },
     checkBoxContainer: {
         flexDirection: 'row',

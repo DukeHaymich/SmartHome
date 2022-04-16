@@ -155,7 +155,7 @@ export default function Dashboard() {
                             description: 'Bình thường'
                         }
                         : {
-                            icon: 'notification-active',
+                            icon: 'notifications-active',
                             description: 'Có dấu hiệu đột nhập!'
                         }
                 }
@@ -172,7 +172,7 @@ export default function Dashboard() {
                         description: 'Bình thường'
                     }
                     : {
-                        icon: 'notification-active',
+                        icon: 'notifications-active',
                         description: 'Có dấu hiệu đột nhập!'
                     }
                 
