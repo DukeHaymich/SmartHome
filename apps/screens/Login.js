@@ -19,8 +19,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import CheckBox from '@react-native-community/checkbox'
 
-import { AuthContext } from '../scripts/context';
-import { transform } from '@babel/core';
+import { AuthContext } from '../scripts/AuthProvider';
 
 export default function Login() {
     const { auth, authDispatch } = useContext(AuthContext);
@@ -28,6 +27,8 @@ export default function Login() {
         username: false,
         password: false
     });
+    const [ username, setUsername ] = useState("");
+    const [ password, setPassword ] = useState("");
     const refInputUsername = useRef();
     const refInputPassword = useRef();
 
@@ -39,8 +40,21 @@ export default function Login() {
         authDispatch({type: 'LOG-IN'});
     }
 
-    const onTextFocus = () => {
-        
+    const onUsernameFocus = () => {
+        setIsFocused((prev) => ({...prev, username: true}));
+        styles.textBoxFocus
+    }
+
+    const onUsernameBlur = () => {
+        setIsFocused((prev) => ({...prev, username: false}));
+    }
+    
+    const onPasswordFocus = () => {
+        setIsFocused((prev) => ({...prev, password: true}));
+    }
+    
+    const onPasswordBlur = () => {
+        setIsFocused((prev) => ({...prev, password: false}));
     }
 
     return (
@@ -63,14 +77,20 @@ export default function Login() {
                 <TextInput
                     editable
                     placeholder='Nhập tên người dùng...'
+                    placeholderTextColor={isFocused.username ? '#3a95d6' : '#A4A4A4'}
+                    value={username}
                     returnKeyType='next'
                     autoFocus={true}
                     onSubmitEditing={() => refInputPassword.current.focus()}
-                    onFocus={() => setIsFocused((prev) => ({...prev, username: true}))}
-                    onBlur={() => setIsFocused((prev) => ({...prev, username: false}))}
+                    onFocus={onUsernameFocus}
+                    onBlur={onUsernameBlur}
+                    onChangeText={(value) => setUsername(value)}
                     blurOnSubmit={false}
                     ref={refInputUsername}
-                    style={[styles.textBox, (isFocused.username ? styles.textBoxFocus : {})]}
+                    style={[styles.textBox,
+                        (isFocused.username ? styles.textBoxFocus : {}),
+                        (username.length != 0 ? styles.textBoxHoldValue : {})
+                    ]}
                 />
             </View>
             <View style={[styles.textContainer, (isFocused.password ? styles.textFocus : {})]}>
@@ -81,12 +101,19 @@ export default function Login() {
                 />
                 <TextInput
                     editable
+                    value={password}
                     placeholder='Nhập mật khẩu...'
+                    placeholderTextColor={isFocused.password ? '#3a95d6' : '#A4A4A4'}
+                    secureTextEntry={true}
                     returnKeyType='done'
                     ref={refInputPassword}
-                    onFocus={() => setIsFocused((prev) => ({...prev, password: true}))}
-                    onBlur={() => setIsFocused((prev) => ({...prev, password: false}))}
-                    style={[styles.textBox, (isFocused.password ? styles.textBoxFocus : {})]}
+                    onFocus={onPasswordFocus}
+                    onBlur={onPasswordBlur}
+                    onChangeText={(value) => setPassword(value)}
+                    style={[styles.textBox,
+                        (isFocused.password ? styles.textBoxFocus : {}),
+                        (password.length != 0 ? styles.textBoxHoldValue : {})
+                    ]}
                 />
             </View>
             {/* <CheckBox
@@ -187,10 +214,10 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
     },
     textFocus: {
-        borderColor: '#1488DB',
+        borderColor: '#1E93FF',
         borderRadius: 5,
         borderWidth: 3,
-        borderBottomColor: '#1488DB',
+        borderBottomColor: '#1E93FF'
     },
     textBox: {
         flex: 1,
@@ -198,10 +225,14 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         fontStyle: 'italic',
         color: '#757575',
-        fontWeight: '500',
+        fontWeight: '400',
     },
     textBoxFocus: {
-        color: '#1488DB',
+        color: '#1E93FF',
+    },
+    textBoxHoldValue: {
+        fontStyle: 'normal',
+        fontWeight: '600',
     },
     checkBoxContainer: {
         flexDirection: 'row',

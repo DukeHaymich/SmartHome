@@ -6,7 +6,7 @@ import { LogBox } from 'react-native';
 import LoginStack from './apps/routes/LoginStack';
 import Drawer from './apps/routes/MenuDrawer';
 import Splash from './apps/screens/Splash';
-import AuthContextProvider, { AuthContext } from './apps/scripts/context';
+import AuthProvider, { AuthContext } from './apps/scripts/AuthProvider';
 
 
 LogBox.ignoreLogs([
@@ -49,8 +49,8 @@ export default function App() {
     }
 
     return (
-        <AuthContextProvider>
+        <AuthProvider>
             <Main/>
-        </AuthContextProvider>
+        </AuthProvider>
     );
 }

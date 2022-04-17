@@ -5,7 +5,9 @@ import Dashboard from '../screens/Dashboard';
 const stack = createNativeStackNavigator();
 
 export default function DashboardStack() {
-    <stack.Navigator>
+    <stack.Navigator screenOptions={{
+        headerStyle: { backgroundColor: '#1e93ff'}
+    }}>
         <stack.Screen
             name='Dashboard'
             component={Dashboard}

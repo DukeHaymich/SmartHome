@@ -277,7 +277,6 @@ export default function Dashboard() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <Header title='Trang nhà'/>
             <View style={styles.listCard}>
                 <FlatList
                     data={devices}

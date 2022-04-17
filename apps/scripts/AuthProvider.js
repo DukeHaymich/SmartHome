@@ -5,7 +5,7 @@ import uuid from 'react-native-uuid';
 /* Authorization */
 export const AuthContext = createContext();
 
-export default function AuthContextProvider(props) {
+export default function AuthProvider(props) {
     const [ auth, authDispatch ] = useReducer((state, action) => {
         switch (action.type) {
             case 'LOG-IN':
