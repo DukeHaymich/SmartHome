@@ -22,22 +22,31 @@ import CheckBox from '@react-native-community/checkbox'
 import { AuthContext } from '../scripts/AuthProvider';
 
 export default function Login() {
-    const { auth, authDispatch } = useContext(AuthContext);
+    const { login } = useContext(AuthContext);
     const [ isFocused, setIsFocused ] = useState({
         username: false,
         password: false
     });
     const [ username, setUsername ] = useState("");
     const [ password, setPassword ] = useState("");
+    const [ warningText, setWarningText ] = useState("");
     const refInputUsername = useRef();
     const refInputPassword = useRef();
 
     const onRememberMeHandler = () => {
-        authDispatch({type: 'REMEMBER-ME'});
+        // authDispatch({type: 'REMEMBER-ME'});
     }
 
     const onLoginHandler = () => {
-        authDispatch({type: 'LOG-IN'});
+        if (username.length == 0) {
+            setWarningText('Tên đăng nhập không được để trống!');
+        } else if (password.length == 0) {
+            setWarningText('Bạn chưa điền mật khẩu!');
+        } else {
+            if (login(username, password) > 0) {
+                setWarningText('Tên đăng nhập hoặc mật khẩu của bạn không hợp lệ');
+            }
+        }
     }
 
     const onUsernameFocus = () => {
@@ -126,14 +135,14 @@ export default function Login() {
 
                 <CheckBox
                     disabled={false}
-                    value={auth.rememberMe}
-                    onValueChange={() => authDispatch({type: 'REMEMBER-ME'})}
+                    value={false}
+                    onValueChange={() => {}}
                     style = {styles.checkBox}
                 />
                 <Text style = {styles.label}>Nhớ mật khẩu</Text>
             </TouchableOpacity>
             <Text style={styles.warning} numberOfLines={2}>
-                Tên đăng nhập hoặc mật khẩu của bạn không hợp lệ
+                {warningText}
             </Text>
             <TouchableOpacity
                 style={styles.button}
@@ -243,17 +252,17 @@ const styles = StyleSheet.create({
     },
     checkBox: {
         alignSelf: 'center',
-        fontWeight: '600',
     },
     label: {
         marginLeft: 5,
         fontSize: 16,
-        color: '#757575'
+        color: '#757575',
+        fontWeight: '600',
     },
     warning: {
-        color: '#f000',
+        color: '#f00',
         fontStyle: 'italic',
-        fontWeight: '700',
+        fontWeight: '600',
         width: '80%',
         marginHorizontal: 45,
         fontSize: 17,

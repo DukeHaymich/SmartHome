@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import {
+    Button,
     StyleSheet,
-    Text,
     View
 } from 'react-native';
 
+import { AuthContext } from '../scripts/AuthProvider';
 
 export default function Activity(props) {
+    const { logout } = useContext(AuthContext);
     return (
         <View>
-            <Text>OK</Text>
+            <Button
+                title='Đăng xuất'
+                onPress={logout}
+            />
         </View>
     )
 }

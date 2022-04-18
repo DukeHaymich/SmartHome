@@ -1,41 +1,45 @@
-import React, { createContext, useReducer } from 'react';
-import uuid from 'react-native-uuid';
+import React, { createContext, useState } from 'react';
+import auth from '@react-native-firebase/auth';
 
 
-/* Authorization */
+/* Authentication */
 export const AuthContext = createContext();
 
-export default function AuthProvider(props) {
-    const [ auth, authDispatch ] = useReducer((state, action) => {
-        switch (action.type) {
-            case 'LOG-IN':
-                return {
-                    ...state,
-                    userToken: uuid.v4()
-                };
-            case 'LOG-OUT':
-                return {
-                    ...state,
-                    userToken: null,
-                    rememberMe: false
-                };
-            case 'REMEMBER-ME':
-                return {
-                    ...state,
-                    rememberMe: !state.rememberMe
-                }
-            default:
-                return state;
-        }
-    },
-    {
-        userToken: null,
-        rememberMe: false
-    });
+export default function AuthProvider({children}) {
+    const [ userToken, setUserToken ] = useState(null);
 
     return (
-        <AuthContext.Provider value={{auth, authDispatch}}>
-            {props.children}
+        <AuthContext.Provider value={{
+            user: {
+                token: userToken,
+                setToken: setUserToken,
+            },
+            login: async (email, password) => {
+                try {
+                    await auth().signInWithEmailAndPassword(email, password);
+                    return 0;
+                } catch (e) {
+                    console.log(e);
+                    return 1;
+                }
+            },
+            register: async (email, password) => {
+                try {
+                    await auth().createUserWithEmailAndPassword(email, password);
+                } catch (e) {
+                    console.log(e);
+                }
+            },
+            logout: async () => {
+                try {
+                    await auth().signOut();
+                } catch (e) {
+                    console.log(e);
+                }
+            }
+            }}
+        >
+            {children}
         </AuthContext.Provider>
     );
 }
