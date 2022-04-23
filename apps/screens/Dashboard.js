@@ -2,22 +2,23 @@ import React, { useEffect, useReducer } from 'react';
 import {
     Button,
     FlatList,
-    Platform,
     SafeAreaView,
-    StatusBar,
     StyleSheet,
     Text,
-    View
+    View,
+    useWindowDimensions
 } from 'react-native';
 
 import MqttService from '../core/services/MqttService';
 
-import Header from '../components/Header';
-import Card from '../components/Card';
+import { NumericCard } from '../components/Card';
+import { colors } from '../scripts/colors';
 
 
 
 export default function Dashboard() {
+    const screen = useWindowDimensions();
+
     const data = [
         {
             id: 0,
@@ -25,7 +26,7 @@ export default function Dashboard() {
             content: [
                 {
                     icon: 'lock-outline',
-                    description: 'Đang đóng'
+                    description: 'Đang tải...'
                 }
             ]
         },
@@ -35,11 +36,11 @@ export default function Dashboard() {
             content: [
                 {
                     icon: 'notifications-none',
-                    description: 'Bình thường'
+                    description: 'Đang tải...'
                 },
                 {
                     icon: 'lock-outline',
-                    description: 'Đang hoạt động'
+                    description: 'Đang tải...'
                 }
             ]
         },
@@ -49,7 +50,7 @@ export default function Dashboard() {
             content: [
                 {
                     icon: 'lock-outline',
-                    description: '0% (Bình thường)'
+                    description: 'Đang tải...'
                 }
             ]
         },
@@ -59,15 +60,60 @@ export default function Dashboard() {
             content: [
                 {
                     icon: 'device-thermostat',
-                    description: '0°C'
+                    description: 'Đang tải...'
                 },
                 {
                     icon: 'waves',
-                    description: '0%'
+                    description: 'Đang tải...'
                 }
             ]
         }
     ]
+
+    const visualIndex = {
+        temperature: 0,
+        humidity: 1,
+    }
+
+    const [ visualNumericData, visualNumericDataDispatch ] = useReducer((state, action) => {
+        switch(action.type) {
+            case 'TEMPERATURE':{
+                var newState = JSON.parse(JSON.stringify(state));
+                const index = visualIndex.temperature;
+                try {
+                    var data = parseInt(action.data)
+                    newState[index].data = data;
+                } catch (e) {
+                    console.warn(e)
+                } finally {
+                    return newState;
+                }
+            }
+            case 'HUMIDITY': {
+                var newState = JSON.parse(JSON.stringify(state));
+                const index = visualIndex.humidity;
+                newState[index].data = action.data;
+                return newState;
+            }
+            default: {
+                return state;
+            }
+        }
+    },
+    [
+        {
+            id: 0,
+            title: 'Nhiệt độ',
+            data: '??',
+            unit: '°C'
+        },
+        {
+            id: 1,
+            title: 'Độ ẩm',
+            data: '??',
+            unit: '%'
+        }
+    ])
 
     const deviceIndex = {
         doorLock: 0,
@@ -199,12 +245,20 @@ export default function Dashboard() {
             data: message,
             index: deviceIndex.temperatureSensor
         });
+        visualNumericDataDispatch({
+            type: 'TEMPERATURE',
+            data: message,
+        });
     }
     const onHumidityTopic = message => {
         devicesDispatch({
             type: 'UPDATE-HUMIDITY',
             data: message,
             index: deviceIndex.humiditySensor
+        });
+        visualNumericDataDispatch({
+            type: 'HUMIDITY',
+            data: message,
         });
     }
     const onFraudDetectTopic = message => {
@@ -277,13 +331,21 @@ export default function Dashboard() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.listCard}>
+            <View style={styles.visualNumericData}>
                 <FlatList
+                    data={visualNumericData}
+                    horizontal={true}
+                    keyExtractor={item => item.id}
+                    renderItem={({item}) => <NumericCard screen={screen} {...item}/>}
+                />
+            </View>
+            <View style={styles.controller}>
+                {/* <FlatList
                     data={devices}
                     renderItem={({item}) => <Card {...item}/>}
                     keyExtractor={item => item.id}
                     contentContainerStyle={{ paddingBottom: 17 }}
-                />
+                /> */}
             </View>
         </SafeAreaView>
     );
@@ -292,10 +354,12 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#fff',
-        paddingTop: Platform.OS === 'ios' ? StatusBar.currentHeight : 0,
+        backgroundColor: colors.background,
     },
-    listCard: {
+    visualNumericData: {
         flex: 1,
+    },
+    controller: {
+        flex: 4,
     }
 });

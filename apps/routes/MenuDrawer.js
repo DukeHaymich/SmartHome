@@ -19,6 +19,7 @@ export default function Drawer() {
                 drawerActiveTintColor: '#fff',
                 drawerActiveBackgroundColor: '#016BD9',
                 drawerInactiveTintColor: '#333',
+                headerShadowVisible: false,
             }}            
         >
             <drawer.Screen

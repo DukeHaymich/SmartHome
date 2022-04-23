@@ -6,6 +6,8 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
+import { colors } from "../scripts/colors";
+
 
 export default function Header({ navigation, title}) {
     
@@ -37,23 +39,25 @@ const styles = StyleSheet.create({
     container: {
         width: '100%',
         height: 55,
-        backgroundColor: '#1e93ff',
+        backgroundColor: colors.background,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
     },
     text: {
-        color: 'white',
+        color: colors.primary,
         fontSize: 25,
-        fontWeight: '600',
+        fontWeight: '700',
         letterSpacing: 1
     },
     leftButton: {
         position: 'absolute',
         left: 16,
-        color: 'white',
+        color: colors.primary,
     },
     rightButton: {
-
+        position: 'absolute',
+        right: 16,
+        color: colors.primary,
     }
 });

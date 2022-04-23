@@ -16,10 +16,10 @@ import {
     View
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-
 import CheckBox from '@react-native-community/checkbox'
 
 import { AuthContext } from '../scripts/AuthProvider';
+import { colors } from '../scripts/colors';
 
 export default function Login() {
     const { login } = useContext(AuthContext);
@@ -43,18 +43,26 @@ export default function Login() {
         } else if (password.length == 0) {
             setWarningText('Bạn chưa điền mật khẩu!');
         } else {
-            if (login(username, password) > 0) {
-                setWarningText('Tên đăng nhập hoặc mật khẩu của bạn không hợp lệ');
-            }
+            login(username, password).then((err) => {
+                if (err == 'invalid-email') {
+                    setWarningText('Sai định dạng địa chỉ email!');
+                } else if (err == 'bad-identity') {
+                    setWarningText('Địa chỉ email hoặc mật khẩu của bạn không hợp lệ!');
+                } else if (err == 'unhandled-exception') {
+                    setWarningText('Lỗi chưa được xử lý! Hãy liên hệ nhà phát hành ứng dụng để xử lý lỗi này.');
+                }
+            });
         }
     }
 
     const onUsernameFocus = () => {
         setIsFocused((prev) => ({...prev, username: true}));
-        styles.textBoxFocus
     }
 
     const onUsernameBlur = () => {
+        if (username) {
+            setWarningText('');
+        }
         setIsFocused((prev) => ({...prev, username: false}));
     }
     
@@ -63,30 +71,33 @@ export default function Login() {
     }
     
     const onPasswordBlur = () => {
+        if (password) {
+            setWarningText('');
+        }
         setIsFocused((prev) => ({...prev, password: false}));
     }
 
     return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <SafeAreaView style={styles.screen}>
-            {/* <BoxShadow setting={styles.logoShadow}> */}
+            {/* <Shadow setting={styles.logoShadow}> */}
                 <Image
                     source={require('../assets/images/logo.png')}
                     style={styles.logo}
                 />
-            {/* </BoxShadow> */}
+            {/* </Shadow> */}
             <Text style = {styles.title}>SMART HOME</Text>
             <Text style = {styles.slogan}>Your choice to the future!</Text>
             <View style = {[styles.textContainer, (isFocused.username ? styles.textFocus : {})]}>
                 <MaterialIcons
-                    name='account-circle'
-                    color={isFocused.username ? '#1488DB' : '#757575'}
+                    name='email'
+                    color={isFocused.username ? colors.BKLightBlue : colors.gray}
                     size={30}
                 />
                 <TextInput
                     editable
-                    placeholder='Nhập tên người dùng...'
-                    placeholderTextColor={isFocused.username ? '#3a95d6' : '#A4A4A4'}
+                    placeholder='Nhập địa chỉ email...'
+                    placeholderTextColor={isFocused.username ? colors.lightGray : colors.lightGray}
                     value={username}
                     returnKeyType='next'
                     autoFocus={true}
@@ -105,14 +116,14 @@ export default function Login() {
             <View style={[styles.textContainer, (isFocused.password ? styles.textFocus : {})]}>
                 <MaterialIcons
                     name='lock'
-                    color={isFocused.password ? '#1488DB' : '#757575'}
+                    color={isFocused.password ? colors.BKLightBlue : colors.gray}
                     size={30}
                 />
                 <TextInput
                     editable
                     value={password}
                     placeholder='Nhập mật khẩu...'
-                    placeholderTextColor={isFocused.password ? '#3a95d6' : '#A4A4A4'}
+                    placeholderTextColor={isFocused.password ? colors.lightGray : colors.lightGray}
                     secureTextEntry={true}
                     returnKeyType='done'
                     ref={refInputPassword}
@@ -125,9 +136,6 @@ export default function Login() {
                     ]}
                 />
             </View>
-            {/* <CheckBox
-                disabled = {false}
-            /> */}
             <TouchableOpacity 
                 style={styles.checkBoxContainer}
                 onPress={onRememberMeHandler}
@@ -178,17 +186,17 @@ const styles = StyleSheet.create({
     logoShadow: {
         width: 160,
         height: 170,
-        color: "#000",
-        border: 2,
-        radius: 3,
+        color: colors.black,
+        border: 0,
+        radius: 1,
         opacity: 0.2,
         x: 0,
-        y: 3,
-        style: { marginVertical: 5 }
+        y: 1,
+        style: { marginVertical: 0 }
     },
     screen: {
         flex: 1,
-        backgroundColor: '#fff',
+        backgroundColor: colors.background,
         // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         fontFamily: 'Roboto',
         // justifyContent: 'center',
@@ -197,12 +205,12 @@ const styles = StyleSheet.create({
     title: {
         marginTop: '1%',
         fontSize: 45,
-        color: '#003CD7',
+        color: colors.BKDarkBlue,
         fontFamily: 'PaytoneOne-Regular',
         alignSelf: 'center'
     },
     slogan: {
-        color: '#1488DB',
+        color: colors.BKLightBlue,
         fontSize: 16,
         fontStyle: 'italic',
         fontWeight: '500',
@@ -213,31 +221,32 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         width: '80%',
         marginTop: 20,
-        borderWidth: 3,
         borderBottomWidth: 3,
-        borderBottomColor: '#A4A4A4',
-        borderColor: '#fff',
+        borderBottomColor: colors.lightGray,
         borderRadius: 0,
         alignSelf: 'center',
         alignItems: 'center',
         paddingLeft: 10,
+        backgroundColor: colors.background,
     },
     textFocus: {
-        borderColor: '#1E93FF',
         borderRadius: 5,
-        borderWidth: 3,
-        borderBottomColor: '#1E93FF'
+        borderBottomWidth: 3,
+        borderBottomColor: colors.primary,
+        elevation: 10,
+        shadowColor: '#0061ab',
+        shadowRadius: 1,
     },
     textBox: {
         flex: 1,
         fontSize: 18,
         paddingLeft: 10,
         fontStyle: 'italic',
-        color: '#757575',
+        color: colors.gray,
         fontWeight: '400',
     },
     textBoxFocus: {
-        color: '#1E93FF',
+        color: colors.primary,
     },
     textBoxHoldValue: {
         fontStyle: 'normal',
@@ -256,11 +265,11 @@ const styles = StyleSheet.create({
     label: {
         marginLeft: 5,
         fontSize: 16,
-        color: '#757575',
+        color: colors.gray,
         fontWeight: '600',
     },
     warning: {
-        color: '#f00',
+        color: 'red',
         fontStyle: 'italic',
         fontWeight: '600',
         width: '80%',
@@ -271,20 +280,20 @@ const styles = StyleSheet.create({
     button: {
         width: '80%',
         height: 45,
-        backgroundColor: '#1DFF1D',
+        backgroundColor: colors.neon,
         borderRadius: 7.5,
         alignSelf: 'center',
         alignItems: 'center',
         justifyContent: 'center',
     },
     labelButton:{
-        color: "#FFFFFF",
+        color: colors.white,
         fontSize: 22,
         fontFamily: 'Nunito-ExtraBold',
-        backgroundColor: '#0000',
+        backgroundColor: colors.transparent,
     },
     labelFooter:{
-        color: '#003CD7',
+        color: colors.BKDarkBlue,
         fontSize: 17,
         fontFamily: 'Nunito-Regular'
     },

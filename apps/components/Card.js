@@ -7,31 +7,40 @@ import {
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-function CardContent(props) {
+import { colors } from "../scripts/colors";
+
+
+function NumericCard(props) {
+    const screen = props.screen;
     return (
-        <View style={styles.cardContent}>
-            <MaterialIcons
-                name={props.icon}
-                color='#000'
-                size={30}
-            />
-            <Text style={styles.description}>{props.description}</Text>
+        <View style={[
+            styles.container,
+            { width: 0.5*screen.width, height: '100%' }
+        ]}>
+            <View style={styles.header}>
+                <Text style={styles.headerText}>{props.title}</Text>
+            </View>
+            <View style={styles.content}>
+                <Text style={[styles.description, styles.data]}>{props.data}</Text>
+                <Text style={[styles.description, styles.unit]}>{props.unit}</Text>
+            </View>
         </View>
     )
 }
 
-export default function Card(props) {
+function ControllerCard(props) {
+    const screen = props.screen;
     return (
-        <View style={styles.container}>
+        <View style={[
+            styles.container,
+            { width: screen.width, height: 0.25*screen.height }
+        ]}>
             <View style={styles.header}>
                 <Text style={styles.headerText}>{props.title}</Text>
-                {/**/}
             </View>
             <View style={styles.content}>
-                <FlatList
-                    data={props.content}
-                    renderItem={({item}) => <CardContent {...item}/>}
-                />
+                <Text style={styles.data}>{props.data}</Text>
+                <Text style={styles.unit}>{props.unit}</Text>
             </View>
         </View>
     )
@@ -39,38 +48,51 @@ export default function Card(props) {
 
 const styles = StyleSheet.create({
     container: {
-        width: '92%',
-        marginTop: 15,
-        backgroundColor: '#E3F0FF',
+        // backgroundColor: '#E3F0FF',
+        // borderColor: colors.primary,
+        // borderWidth: 3,
         alignSelf: 'center',
         borderRadius: 10,
     },
     header: {
         height: 42,
-        backgroundColor: '#1E93FF',
+        // backgroundColor: '#1E93FF',
         borderTopLeftRadius: 10,
         borderTopRightRadius: 10,
         justifyContent: 'center',
     },
     headerText: {
-        color: '#fff',
-        fontSize: 22,
+        color: colors.BKLightBlue,
+        fontFamily: 'Roboto',
+        fontSize: 28,
         fontWeight: '500',
-        marginLeft: 15,
+        marginLeft: 20,
     },
     content: {
-        paddingBottom: 17,
-    },
-    cardContent: {
-        marginTop: 17,
-        paddingHorizontal: 15,
+        height: '75%',
+        width: undefined,
         flexDirection: 'row',
-        alignItems: 'center',
-
+        flexWrap: 'wrap',
+        backgroundColor: 'black',
     },
     description: {
-        color: '#000',
-        fontSize: 20,
-        marginLeft: 15
-    }
+        height: '100%',
+        width: undefined,
+        color: '#fff',
+        fontFamily: 'Digital-7-Mono',
+        fontSize: 64,
+        textAlignVertical: 'bottom',
+    },
+    unit: {
+        textAlign: 'left',
+        marginLeft: 15,
+        flex: 1
+    },
+    data: {
+        flex: 2,
+        textAlign: 'right',
+    },
+
 });
+
+export { NumericCard, ControllerCard }
