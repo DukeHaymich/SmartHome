@@ -38,13 +38,6 @@ export default function Dashboard() {
                 newState.humidity.data = action.data;
                 return newState;
             }
-            case 'GAS': {
-                var newState = JSON.parse(JSON.stringify(state));
-                var data = action.data;
-                data = Math.round((data/1023*100 + Number.EPSILON)*10)/10;
-                newState.gas.data = data;
-                return newState;
-            }
             default: {
                 return state;
             }
@@ -63,18 +56,31 @@ export default function Dashboard() {
             data: '__',
             unit: '%'
         },
-        gas: {
-            id: 2,
-            title: 'Nồng độ khí ga',
-            data: '__',
-            unit: '%'
+    })
+
+    const [ gas, setGas ] = useReducer((state, action) => {
+        switch(action.type) {
+            case 'GAS': {
+                var newState = JSON.parse(JSON.stringify(state));
+                var data = action.data;
+                data = Math.round((data/1023*100 + Number.EPSILON)*10)/10;
+                newState.gas.data = data;
+                return newState;
+            }
+            default: {
+                return state;
+            }
         }
+    }, {
+        title: 'Nồng độ khí ga',
+        data: 0,
+        unit: '%'
     })
 
     const [ devices, setDevices ] = useReducer((state, action) => {
         switch(action.type) {
             case 'DOOR-LOCK': {
-
+                
             }
             case 'FRAUD-DETECTOR': {
 
@@ -89,13 +95,14 @@ export default function Dashboard() {
     },
     {
         doorLock: {
-
+            id: 0,
+            title: 'Khóa cửa',
+            icon: 'door-open',
         },
         fraudDetector: {
-            
-        },
-        fireAlarm: {
-
+            id: 1,
+            title: 'Chống trộm',
+            icon: 'user-shield',
         },
     })
 
@@ -170,6 +177,11 @@ export default function Dashboard() {
 
     return (
         <SafeAreaView style={styles.container}>
+            <View style = {{padding: 15}}> 
+                <Text style = {[styles.headerText,{opacity: 0.5}]}>Welcome</Text>
+                <Text style = {[styles.headerText,{fontWeight: '900'}]}>Sơn Đại Gia</Text>
+            </View> 
+            
             <View style={styles.visualNumericData}>
                 <FlatList
                     data={Object.values(numericData)}
@@ -186,9 +198,12 @@ export default function Dashboard() {
                     contentContainerStyle={{ paddingBottom: 17 }}
                 />
             </View> */}
+            <View style = {styles.graph}>
+                <Text>Line Chart Here!</Text>
+            </View>
             <View style={styles.controller}>
                 <FlatList
-                    data={devices}
+                    data={Object.values(devices)}
                     renderItem={({item}) => <ControllerCard screen={screen} {...item}/>}
                     keyExtractor={item => item.id}
                     key = {2}
@@ -206,15 +221,18 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
     },
     visualNumericData: {
-        flex: 1,
+        flex: 1.5,
         // backgroundColor: 'red',
     },
     graph: {
-        flex: 2,
+        flex: 3,
         // backgroundColor: 'black',
     },
     controller: {
-        flex: 4,
+        flex: 3,
         // backgroundColor: 'black',
     },
+    headerText: {
+        fontFamily: 'Roboto'
+    }
 });

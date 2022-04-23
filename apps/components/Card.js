@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 import {
-    FlatList,
     StyleSheet,
     Text,
-    View
+    TouchableOpacity,
+    View,
 } from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-import { colors } from "../scripts/colors";
+import { colors } from '../scripts/colors';
 
 
 function NumericCard(props) {
@@ -17,7 +17,7 @@ function NumericCard(props) {
             styles.container,
             { width: 0.5*screen.width }
         ]}>
-            <View style={styles.header}>
+            <View style={styles.headerNumeric}>
                 <Text style={styles.headerText}>{props.title}</Text>
             </View>
             <View style={[styles.content, styles.numeric]}>
@@ -31,30 +31,33 @@ function NumericCard(props) {
 function ControllerCard(props) {
     const screen = props.screen;
     return (
-        <View style={[
-            styles.container,
-            { width: screen.width, height: 0.25*screen.height }
-        ]}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}>{props.title}</Text>
-            </View>
-            <View style={[styles.content, styles.controller]}>
-                <Text style={styles.data}>{props.data}</Text>
-                <Text style={styles.unit}>{props.unit}</Text>
-            </View>
-        </View>
+        <TouchableOpacity
+            activeOpacity={0.75}
+            style={[
+                styles.container,
+                styles.btn
+            ]
+        }>
+            {/* Icon goes here */}
+            <FontAwesome5
+                name={props.icon}
+                size={64}
+                style={styles.icon}
+            />
+            <Text style={styles.label}>{props.title}</Text>
+        </TouchableOpacity>
     )
-}
+} 
 
 const styles = StyleSheet.create({
     container: {
         borderRadius: 10,
         flex: 1,
-        backgroundColor: 'red'
     },
-    header: {
+    headerNumeric: {
         height: 42,
         justifyContent: 'center',
+        // backgroundColor: 'red'
     },
     headerText: {
         color: colors.BKLightBlue,
@@ -94,6 +97,20 @@ const styles = StyleSheet.create({
         // width: undefined,
         // flexDirection: 'row',
     },
+    label: {
+        fontFamily: 'Roboto',
+        // position: 'absolute',
+    },
+    icon: {
+        color: colors.BKDarkBlue,
+    },
+    btn: {
+        backgroundColor: '#1488DB',
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        padding: 15, 
+        margin: 10
+    }
 });
 
 export { NumericCard, ControllerCard }
