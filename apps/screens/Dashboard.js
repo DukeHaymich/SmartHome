@@ -5,13 +5,14 @@ import {
     SafeAreaView,
     StyleSheet,
     Text,
+    TouchableOpacity,
     View,
     useWindowDimensions
 } from 'react-native';
 
 import MqttService from '../core/services/MqttService';
 
-import { NumericCard } from '../components/Card';
+import { NumericCard, ControllerCard } from '../components/Card';
 import { colors } from '../scripts/colors';
 
 
@@ -19,70 +20,13 @@ import { colors } from '../scripts/colors';
 export default function Dashboard() {
     const screen = useWindowDimensions();
 
-    const data = [
-        {
-            id: 0,
-            title: 'Khóa cửa',
-            content: [
-                {
-                    icon: 'lock-outline',
-                    description: 'Đang tải...'
-                }
-            ]
-        },
-        {
-            id: 1,
-            title: 'Hệ thống chống trộm',
-            content: [
-                {
-                    icon: 'notifications-none',
-                    description: 'Đang tải...'
-                },
-                {
-                    icon: 'lock-outline',
-                    description: 'Đang tải...'
-                }
-            ]
-        },
-        {
-            id: 2,
-            title: 'Nồng độ khí gas',
-            content: [
-                {
-                    icon: 'lock-outline',
-                    description: 'Đang tải...'
-                }
-            ]
-        },
-        {
-            id: 3,
-            title: 'Nhiệt độ và độ ẩm',
-            content: [
-                {
-                    icon: 'device-thermostat',
-                    description: 'Đang tải...'
-                },
-                {
-                    icon: 'waves',
-                    description: 'Đang tải...'
-                }
-            ]
-        }
-    ]
-
-    const visualIndex = {
-        temperature: 0,
-        humidity: 1,
-    }
-
-    const [ visualNumericData, visualNumericDataDispatch ] = useReducer((state, action) => {
+    const [ numericData, numericDataDispatch ] = useReducer((state, action) => {
         switch(action.type) {
             case 'TEMPERATURE':{
                 var newState = JSON.parse(JSON.stringify(state));
-                const index = visualIndex.temperature;
                 try {
                     var data = parseInt(action.data)
-                    newState[index].data = data;
+                    newState.temperature.data = data;
                 } catch (e) {
                     console.warn(e)
                 } finally {
@@ -91,8 +35,14 @@ export default function Dashboard() {
             }
             case 'HUMIDITY': {
                 var newState = JSON.parse(JSON.stringify(state));
-                const index = visualIndex.humidity;
-                newState[index].data = action.data;
+                newState.humidity.data = action.data;
+                return newState;
+            }
+            case 'GAS': {
+                var newState = JSON.parse(JSON.stringify(state));
+                var data = action.data;
+                data = Math.round((data/1023*100 + Number.EPSILON)*10)/10;
+                newState.gas.data = data;
                 return newState;
             }
             default: {
@@ -100,199 +50,88 @@ export default function Dashboard() {
             }
         }
     },
-    [
-        {
+    {
+        temperature: {
             id: 0,
             title: 'Nhiệt độ',
-            data: '??',
+            data: '__',
             unit: '°C'
         },
-        {
+        humidity: {
             id: 1,
             title: 'Độ ẩm',
-            data: '??',
+            data: '__',
+            unit: '%'
+        },
+        gas: {
+            id: 2,
+            title: 'Nồng độ khí ga',
+            data: '__',
             unit: '%'
         }
-    ])
+    })
 
-    const deviceIndex = {
-        doorLock: 0,
-        fraudBuzz: 1,
-        gasSensor: 2,
-        temperatureSensor: 3,
-        humiditySensor: 3,
-        fraudAlarm: 1,
-    }
+    const [ devices, setDevices ] = useReducer((state, action) => {
+        switch(action.type) {
+            case 'DOOR-LOCK': {
 
-    const [ hiddenState, hiddenStateDispatch ] = useReducer((state, action) => {
-        switch (action.type) {
-            case 'GAS-ALARM':
-                return {
-                    ...state,
-                    gasAlarm: parseInt(action.data)
-                }
-            default:
+            }
+            case 'FRAUD-DETECTOR': {
+
+            }
+            case 'FIRE-ALARM': {
+
+            }
+            default: {
                 return state;
+            }
         }
     },
     {
-        gasAlarm: 0
-    });
-    
-    const [ devices, devicesDispatch ] = useReducer((state, action) => {
-        switch (action.type) {
-            case 'UPDATE-GAS': {
-                const gasThreshold = 600;
-                var newState = JSON.parse(JSON.stringify(state));
-                const data = parseInt(action.data);
-                const desc = (data >= gasThreshold) // (hiddenState.gasAlarm === 1)
-                    ? " (Vượt ngưỡng an toàn!)"
-                    : " (Bình thường)";
-                newState[action.index].content[0].description
-                    = Math.round((data/1023*100 + Number.EPSILON)*10)/10
-                    + "%" + desc
-                    ;
-                
-                return newState;
-            }
-            case 'UPDATE-TEMPERATURE': {
-                var newState = JSON.parse(JSON.stringify(state));
-                const data = action.data;
-                newState[action.index].content[0].description
-                    = Math.round((parseInt(data) + Number.EPSILON)*10)/10
-                    + "°C"
-                    ;
-                    
-                return newState;
-            }
-            case 'UPDATE-HUMIDITY': {
-                var newState = JSON.parse(JSON.stringify(state));
-                const data = action.data;
-                newState[action.index].content[1].description
-                    = data + "%"
-                    ;
-                    
-                return newState;
-            }
-            case 'UPDATE-DOOR-LOCK': {
-                var newState = JSON.parse(JSON.stringify(state));
-                const data = action.data;
-                newState[action.index].content[0]
-                    = (data === 0)
-                    ? {
-                        icon: 'lock-open',
-                        description: 'Đang mở'
-                    }
-                    : {
-                        icon: 'lock-outline',
-                        description: 'Đang đóng'
-                    }
-                
-                return newState;
-            }
-            case 'UPDATE-FRAUD-DETECT': {
-                var newState = JSON.parse(JSON.stringify(state));
-                if (newState[action.index].content[1].description === 'Đang hoạt động') {
-                    const data = action.data;
-                    newState[action.index].content[0]
-                        = (data === 0)
-                        ? {
-                            icon: 'notifications-none',
-                            description: 'Bình thường'
-                        }
-                        : {
-                            icon: 'notifications-active',
-                            description: 'Có dấu hiệu đột nhập!'
-                        }
-                }
-                
-                return newState;
-            }
-            case 'UPDATE-FRAUD-ALARM': {
-                var newState = JSON.parse(JSON.stringify(state));
-                const data = action.data;
-                newState[action.index].content[1]
-                    = (data === 0)
-                    ? {
-                        icon: 'notifications-none',
-                        description: 'Bình thường'
-                    }
-                    : {
-                        icon: 'notifications-active',
-                        description: 'Có dấu hiệu đột nhập!'
-                    }
-                
-                return newState;
-            }
-            default:
-                return state;
-        }
-    },
-        data
-    );
+        doorLock: {
+
+        },
+        fraudDetector: {
+            
+        },
+        fireAlarm: {
+
+        },
+    })
 
 
     const onGasTopic = message => {
-        devicesDispatch({
-            type: 'UPDATE-GAS',
-            data: message,
-            index: deviceIndex.gasSensor
-        });
+        numericDataDispatch({
+            type: 'GAS',
+            data: message
+        })
     }
     const onTemperatureTopic = message => {
-        devicesDispatch({
-            type: 'UPDATE-TEMPERATURE',
-            data: message,
-            index: deviceIndex.temperatureSensor
-        });
-        visualNumericDataDispatch({
+        numericDataDispatch({
             type: 'TEMPERATURE',
             data: message,
         });
     }
     const onHumidityTopic = message => {
-        devicesDispatch({
-            type: 'UPDATE-HUMIDITY',
-            data: message,
-            index: deviceIndex.humiditySensor
-        });
-        visualNumericDataDispatch({
+        numericDataDispatch({
             type: 'HUMIDITY',
             data: message,
         });
     }
     const onFraudDetectTopic = message => {
-        devicesDispatch({
-            type: 'UPDATE-FRAUD-DETECT',
-            data: message,
-            index: deviceIndex.fraudBuzz
-        });
+
     }
     const onFireDetectTopic = message => {
-        hiddenStateDispatch({
-            type: 'GAS_ALARM',
-            data: message
-        });
+
     }
     const onDoorLockTopic = message => {
-        devicesDispatch({
-            type: 'UPDATE-DOOR-LOCK',
-            data: message,
-            index: deviceIndex.doorLock
-        });
+
     }
     const onFraudAlarmTopic = message => {
-        devicesDispatch({
-            type: 'UPDATE-FRAUD-ALARM',
-            data: message,
-            index: deviceIndex.fraudAlarm
-        });
+
     }
     const onFireAlarmTopic = message => {
-        // hiddenStateDispatch({
-        //     type: 'GAS_ALARM',
-        //     data: message
-        // });
+        
     }
     
     const mqttSuccessHandler = () => {
@@ -333,19 +172,28 @@ export default function Dashboard() {
         <SafeAreaView style={styles.container}>
             <View style={styles.visualNumericData}>
                 <FlatList
-                    data={visualNumericData}
+                    data={Object.values(numericData)}
                     horizontal={true}
                     keyExtractor={item => item.id}
                     renderItem={({item}) => <NumericCard screen={screen} {...item}/>}
                 />
             </View>
-            <View style={styles.controller}>
-                {/* <FlatList
+            {/* <View styles={styles.graph}>
+                <FlatList
                     data={devices}
-                    renderItem={({item}) => <Card {...item}/>}
+                    renderItem={({item}) => <ControllerCard screen={screen} {...item}/>}
                     keyExtractor={item => item.id}
                     contentContainerStyle={{ paddingBottom: 17 }}
-                /> */}
+                />
+            </View> */}
+            <View style={styles.controller}>
+                <FlatList
+                    data={devices}
+                    renderItem={({item}) => <ControllerCard screen={screen} {...item}/>}
+                    keyExtractor={item => item.id}
+                    key = {2}
+                    numColumns = {2}
+                />
             </View>
         </SafeAreaView>
     );
@@ -354,12 +202,19 @@ export default function Dashboard() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        alignItems: 'stretch',
         backgroundColor: colors.background,
     },
     visualNumericData: {
         flex: 1,
+        // backgroundColor: 'red',
+    },
+    graph: {
+        flex: 2,
+        // backgroundColor: 'black',
     },
     controller: {
         flex: 4,
-    }
+        // backgroundColor: 'black',
+    },
 });

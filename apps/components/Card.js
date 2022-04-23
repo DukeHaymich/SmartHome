@@ -15,12 +15,12 @@ function NumericCard(props) {
     return (
         <View style={[
             styles.container,
-            { width: 0.5*screen.width, height: '100%' }
+            { width: 0.5*screen.width }
         ]}>
             <View style={styles.header}>
                 <Text style={styles.headerText}>{props.title}</Text>
             </View>
-            <View style={styles.content}>
+            <View style={[styles.content, styles.numeric]}>
                 <Text style={[styles.description, styles.data]}>{props.data}</Text>
                 <Text style={[styles.description, styles.unit]}>{props.unit}</Text>
             </View>
@@ -38,7 +38,7 @@ function ControllerCard(props) {
             <View style={styles.header}>
                 <Text style={styles.headerText}>{props.title}</Text>
             </View>
-            <View style={styles.content}>
+            <View style={[styles.content, styles.controller]}>
                 <Text style={styles.data}>{props.data}</Text>
                 <Text style={styles.unit}>{props.unit}</Text>
             </View>
@@ -48,17 +48,12 @@ function ControllerCard(props) {
 
 const styles = StyleSheet.create({
     container: {
-        // backgroundColor: '#E3F0FF',
-        // borderColor: colors.primary,
-        // borderWidth: 3,
-        alignSelf: 'center',
         borderRadius: 10,
+        flex: 1,
+        backgroundColor: 'red'
     },
     header: {
         height: 42,
-        // backgroundColor: '#1E93FF',
-        borderTopLeftRadius: 10,
-        borderTopRightRadius: 10,
         justifyContent: 'center',
     },
     headerText: {
@@ -66,33 +61,39 @@ const styles = StyleSheet.create({
         fontFamily: 'Roboto',
         fontSize: 28,
         fontWeight: '500',
-        marginLeft: 20,
+        marginLeft: 20
     },
     content: {
-        height: '75%',
-        width: undefined,
-        flexDirection: 'row',
-        flexWrap: 'wrap',
-        backgroundColor: 'black',
+        justifyContent: 'center',
+        flex: 1
     },
     description: {
-        height: '100%',
-        width: undefined,
-        color: '#fff',
+        color: colors.lightBlue,
         fontFamily: 'Digital-7-Mono',
-        fontSize: 64,
         textAlignVertical: 'bottom',
     },
     unit: {
+        flex: 1,
         textAlign: 'left',
         marginLeft: 15,
-        flex: 1
+        marginBottom: 4,
+        fontSize: 64,
     },
     data: {
         flex: 2,
         textAlign: 'right',
+        fontSize: 96,
     },
-
+    numeric: {
+        // height: '75%',
+        // width: undefined,
+        flexDirection: 'row',
+    },
+    controller: {
+        // height: '75%',
+        // width: undefined,
+        // flexDirection: 'row',
+    },
 });
 
 export { NumericCard, ControllerCard }
