@@ -3,8 +3,10 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
+    TouchableHighlight,
     View,
 } from 'react-native';
+import { color } from 'react-native-reanimated';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { colors } from '../scripts/colors';
@@ -30,22 +32,28 @@ function NumericCard(props) {
 
 function ControllerCard(props) {
     const screen = props.screen;
+    
     return (
-        <TouchableOpacity
-            activeOpacity={0.75}
+        <TouchableHighlight
+            activeOpacity={0.6}
+            underlayColor = {colors.BKLightBlue}
+            onPress={() => {}}
             style={[
                 styles.container,
                 styles.btn
-            ]
-        }>
+            ]}
+        >
             {/* Icon goes here */}
-            <FontAwesome5
-                name={props.icon}
-                size={64}
-                style={styles.icon}
-            />
-            <Text style={styles.label}>{props.title}</Text>
-        </TouchableOpacity>
+            <>
+                <FontAwesome5
+                    name={props.icon}
+                    size={50}
+                    style={styles.icon}
+                />
+                <Text style={styles.label}>{props.title}</Text>
+            </>
+    
+        </TouchableHighlight>
     )
 } 
 
@@ -98,18 +106,21 @@ const styles = StyleSheet.create({
         // flexDirection: 'row',
     },
     label: {
-        fontFamily: 'Roboto',
-        // position: 'absolute',
+        fontFamily: 'Nunito-Medium',
+        fontSize: 20,
+        // fontWeight: '600'
     },
     icon: {
         color: colors.BKDarkBlue,
     },
     btn: {
-        backgroundColor: '#1488DB',
+        backgroundColor: colors.white,
         justifyContent: 'center', 
         alignItems: 'center', 
         padding: 15, 
-        margin: 10
+        margin: 10,
+        borderRadius: 1000,
+        aspectRatio: 1,
     }
 });
 

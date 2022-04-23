@@ -9,6 +9,14 @@ import {
     View,
     useWindowDimensions
 } from 'react-native';
+import {
+    LineChart,
+    BarChart,
+    PieChart,
+    ProgressChart,
+    ContributionGraph,
+    StackedBarChart
+} from "react-native-chart-kit";
 
 import MqttService from '../core/services/MqttService';
 
@@ -177,9 +185,9 @@ export default function Dashboard() {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style = {{padding: 15}}> 
-                <Text style = {[styles.headerText,{opacity: 0.5}]}>Welcome</Text>
-                <Text style = {[styles.headerText,{fontWeight: '900'}]}>Sơn Đại Gia</Text>
+            <View style = {{marginVertical: 5, marginHorizontal:10}}> 
+                <Text style = {[styles.headerText,{opacity: 0.5}]}>Xin chào,</Text>
+                <Text style = {[styles.headerText,{fontWeight: '700',marginLeft: 5, fontSize: 20}]}>Sơn Đại Gia</Text>
             </View> 
             
             <View style={styles.visualNumericData}>
@@ -198,9 +206,57 @@ export default function Dashboard() {
                     contentContainerStyle={{ paddingBottom: 17 }}
                 />
             </View> */}
-            <View style = {styles.graph}>
-                <Text>Line Chart Here!</Text>
+            <View style={styles.graph}>
+                <Text style = {[styles.headerText,{alignSelf: 'center'}]}>Nồng độ khí gas</Text>
+                <LineChart
+                    data={{
+                        labels: [],
+                        datasets: [
+                            {
+                            data: [
+                                Math.random() * 100,
+                                Math.random() * 100,
+                                Math.random() * 100,
+                                Math.random() * 100,
+                                Math.random() * 100,
+                                Math.random() * 100
+                            ]
+                            }
+                        ]
+                    }}
+                    width={screen.width * 0.95} // from react-native
+                    height={220}
+                    // yAxisLabel="$"
+                    yAxisSuffix="%"
+                    yAxisInterval={1} // optional, defaults to 1
+                    chartConfig={{
+                        backgroundColor: "#e26a00",
+                        backgroundGradientFrom: "#83A4F9",
+                        backgroundGradientTo: colors.BKDarkBlue,
+                        decimalPlaces: 1, // optional, defaults to 2dp
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        style: {
+                            borderRadius: 16
+                        },
+                        propsForDots: {
+                            r: "6",
+                            strokeWidth: "2",
+                            stroke: colors.white
+                        },
+                        propsForLabels:{
+                            fontSize: 15
+                        }
+                    }}
+                    // bezier
+                    style={{
+                        marginVertical: 8,
+                        borderRadius: 16,
+                        alignSelf: 'center',
+                    }}
+                />
             </View>
+
             <View style={styles.controller}>
                 <FlatList
                     data={Object.values(devices)}
@@ -221,18 +277,20 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
     },
     visualNumericData: {
-        flex: 1.5,
+        flex: 1.8,
         // backgroundColor: 'red',
     },
     graph: {
-        flex: 3,
+        flex: 3.5,
         // backgroundColor: 'black',
     },
     controller: {
         flex: 3,
         // backgroundColor: 'black',
+        marginTop: 10
     },
     headerText: {
-        fontFamily: 'Roboto'
+        fontFamily: 'Nunito-SemiBold',
+        fontSize: 18
     }
 });
