@@ -36,7 +36,7 @@ function ControllerCard(props) {
     return (
         <TouchableHighlight
             activeOpacity={0.6}
-            underlayColor = {colors.BKLightBlue}
+            underlayColor = {colors.BKDarkBlue}
             onPress={() => {}}
             style={[
                 styles.container,
@@ -69,7 +69,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         color: colors.BKLightBlue,
-        fontFamily: 'Roboto',
+        fontFamily: 'Nunito-Medium',
         fontSize: 28,
         fontWeight: '500',
         marginLeft: 20
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         // fontWeight: '600'
     },
     icon: {
-        color: colors.BKDarkBlue,
+        color: colors.BKLightBlue,
     },
     btn: {
         backgroundColor: colors.white,

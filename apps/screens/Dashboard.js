@@ -65,14 +65,24 @@ export default function Dashboard() {
             unit: '%'
         },
     })
-
+    // const [ gasList, setGasList] = useState([])
     const [ gas, setGas ] = useReducer((state, action) => {
         switch(action.type) {
             case 'GAS': {
                 var newState = JSON.parse(JSON.stringify(state));
-                var data = action.data;
+                // var data = action.data;
+                var data = action.data[0];
+                var dataList = newState.gas.data;
                 data = Math.round((data/1023*100 + Number.EPSILON)*10)/10;
-                newState.gas.data = data;
+                if (dataList.length === 6){
+                    let head,tail;
+                    [head, ...tail] = [...dataList];
+                    dataList = [...tail, data];
+                }
+                else{
+                    dataList = [...dataList, data];
+                }
+                newState.gas.data = dataList;
                 return newState;
             }
             default: {
@@ -81,7 +91,7 @@ export default function Dashboard() {
         }
     }, {
         title: 'Nồng độ khí ga',
-        data: 0,
+        data: [0],
         unit: '%'
     })
 
@@ -207,20 +217,13 @@ export default function Dashboard() {
                 />
             </View> */}
             <View style={styles.graph}>
-                <Text style = {[styles.headerText,{alignSelf: 'center'}]}>Nồng độ khí gas</Text>
+                <Text style = {[styles.headerText,{alignSelf: 'center', fontSize: 28, color: colors.BKLightBlue}]}>Nồng độ khí gas</Text>
                 <LineChart
                     data={{
-                        labels: [],
+                        // labels: [],
                         datasets: [
                             {
-                            data: [
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100,
-                                Math.random() * 100
-                            ]
+                                data: gas.data
                             }
                         ]
                     }}
@@ -237,7 +240,7 @@ export default function Dashboard() {
                         color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         style: {
-                            borderRadius: 16
+                            borderRadius: 16,
                         },
                         propsForDots: {
                             r: "6",
@@ -245,7 +248,8 @@ export default function Dashboard() {
                             stroke: colors.white
                         },
                         propsForLabels:{
-                            fontSize: 15
+                            fontSize: 20,
+                            fontFamily: "Digital-7"
                         }
                     }}
                     // bezier
@@ -277,7 +281,7 @@ const styles = StyleSheet.create({
         backgroundColor: colors.background,
     },
     visualNumericData: {
-        flex: 1.8,
+        flex: 1.7,
         // backgroundColor: 'red',
     },
     graph: {
@@ -287,10 +291,10 @@ const styles = StyleSheet.create({
     controller: {
         flex: 3,
         // backgroundColor: 'black',
-        marginTop: 10
+        paddingTop: 20
     },
     headerText: {
-        fontFamily: 'Nunito-SemiBold',
+        fontFamily: 'Nunito-Medium',
         fontSize: 18
     }
 });
