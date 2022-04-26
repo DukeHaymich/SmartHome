@@ -39,15 +39,15 @@ export default function Login() {
 
     const onLoginHandler = () => {
         if (username.length == 0) {
-            setWarningText('Tên đăng nhập không được để trống!');
+            setWarningText('Email không được để trống!');
         } else if (password.length == 0) {
             setWarningText('Bạn chưa điền mật khẩu!');
         } else {
             login(username, password).then((err) => {
                 if (err == 'invalid-email') {
-                    setWarningText('Sai định dạng địa chỉ email!');
+                    setWarningText('Bạn nhập sai định dạng email!');
                 } else if (err == 'bad-identity') {
-                    setWarningText('Địa chỉ email hoặc mật khẩu của bạn không hợp lệ!');
+                    setWarningText('Email hoặc mật khẩu của bạn không hợp lệ!');
                 } else if (err == 'unhandled-exception') {
                     setWarningText('Lỗi chưa được xử lý! Hãy liên hệ nhà phát hành ứng dụng để xử lý lỗi này.');
                 }
@@ -285,7 +285,7 @@ const styles = StyleSheet.create({
     },
     button: {
         width: '80%',
-        height: 45,
+        height: 50,
         backgroundColor: colors.neon,
         borderRadius: 7.5,
         alignSelf: 'center',
