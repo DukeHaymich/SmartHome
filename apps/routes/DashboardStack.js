@@ -1,21 +1,31 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
 
 import Dashboard from '../screens/Dashboard';
-import DeviceControl from '../screens/DeviceControl';
+import FraudDetector from '../screens/FraudDetector';
+import LockDoor from '../screens/FraudDetector';
 
 const stack = createNativeStackNavigator();
 
 export default function DashboardStack() {
-    <stack.Navigator screenOptions={{
-        headerStyle: { backgroundColor: '#1e93ff'}
-    }}>
-        <stack.Screen
-            name='Dashboard'
-            component={Dashboard}
-        />
-        <stack.Screen
-            name='DeviceControl'
-            component={DeviceControl}
-        />
-    </stack.Navigator>
+    return (
+        <stack.Navigator screenOptions={{
+            headerStyle: { backgroundColor: '#1e93ff'},
+            headerShown: false
+        }}>
+            <stack.Screen
+                name='Dashboard'
+                component={Dashboard}
+            />
+            <stack.Screen
+                name='Chống trộm'
+                component={FraudDetector}
+            />
+            <stack.Screen
+                name='Khóa cửa'
+                component={LockDoor}
+            />
+        </stack.Navigator>
+    )
+    
 }

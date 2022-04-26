@@ -233,9 +233,15 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         borderBottomWidth: 3,
         borderBottomColor: colors.primary,
+        backgroundColor: colors.white,
+        shadowColor: colors.BKLightBlue,
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
         elevation: 10,
-        shadowColor: '#0061ab',
-        shadowRadius: 1,
     },
     textBox: {
         flex: 1,

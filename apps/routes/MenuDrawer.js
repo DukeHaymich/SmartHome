@@ -2,7 +2,7 @@ import React from 'react';
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import Dashboard from '../screens/Dashboard';
+import DashboardStack from '../routes/DashboardStack';
 import Activity from '../screens/Activity';
 import Account from '../screens/Account';
 import CustomDrawer from '../components/CustomDrawer';
@@ -24,11 +24,11 @@ export default function Drawer() {
         >
             <drawer.Screen
                 name='Trang nhà'
-                component={Dashboard}
-                options={ ({ navigation }) => {
+                component={DashboardStack}
+                options={({ navigation }) => {
                     return {
                         drawerIcon: ({color}) => (<MaterialIcons name = 'home' size={25} color= {color}/>),
-                        header: () => <Header 
+                        header: () => <Header
                             navigation={navigation}
                             title='Trang nhà'
                         />,

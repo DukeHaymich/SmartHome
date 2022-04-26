@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useState, useReducer } from 'react';
 import {
     Button,
     FlatList,
@@ -10,12 +10,7 @@ import {
     useWindowDimensions
 } from 'react-native';
 import {
-    LineChart,
-    BarChart,
-    PieChart,
-    ProgressChart,
-    ContributionGraph,
-    StackedBarChart
+    LineChart
 } from "react-native-chart-kit";
 
 import MqttService from '../core/services/MqttService';
@@ -25,8 +20,9 @@ import { colors } from '../scripts/colors';
 
 
 
-export default function Dashboard() {
+export default function Dashboard({navigation}) {
     const screen = useWindowDimensions();
+    const [ today, setToday ] = useState(new Date());
 
     const [ numericData, numericDataDispatch ] = useReducer((state, action) => {
         switch(action.type) {
@@ -65,24 +61,20 @@ export default function Dashboard() {
             unit: '%'
         },
     })
-    // const [ gasList, setGasList] = useState([])
     const [ gas, setGas ] = useReducer((state, action) => {
         switch(action.type) {
             case 'GAS': {
                 var newState = JSON.parse(JSON.stringify(state));
-                // var data = action.data;
-                var data = action.data[0];
-                var dataList = newState.gas.data;
-                data = Math.round((data/1023*100 + Number.EPSILON)*10)/10;
-                if (dataList.length === 6){
-                    let head,tail;
-                    [head, ...tail] = [...dataList];
-                    dataList = [...tail, data];
+                var data = action.data;
+                setToday(new Date());
+                var time = today.toLocaleTimeString();
+                data = Math.round((data/1023*100 + Number.EPSILON));
+                if (newState.data.length >= 5){
+                    newState.data.shift();
+                    newState.time.shift();
                 }
-                else{
-                    dataList = [...dataList, data];
-                }
-                newState.gas.data = dataList;
+                newState.data = [...newState.data, data];
+                newState.time = [...newState.time, time]
                 return newState;
             }
             default: {
@@ -92,6 +84,7 @@ export default function Dashboard() {
     }, {
         title: 'Nồng độ khí ga',
         data: [0],
+        time: [today.toLocaleTimeString()],
         unit: '%'
     })
 
@@ -126,7 +119,7 @@ export default function Dashboard() {
 
 
     const onGasTopic = message => {
-        numericDataDispatch({
+        setGas({
             type: 'GAS',
             data: message
         })
@@ -197,7 +190,7 @@ export default function Dashboard() {
         <SafeAreaView style={styles.container}>
             <View style = {{marginVertical: 5, marginHorizontal:10}}> 
                 <Text style = {[styles.headerText,{opacity: 0.5}]}>Xin chào,</Text>
-                <Text style = {[styles.headerText,{fontWeight: '700',marginLeft: 5, fontSize: 20}]}>Sơn Đại Gia</Text>
+                <Text style = {[styles.headerText,{fontWeight: '700', marginLeft: 15, fontSize: 23}]}>Sơn Đại Gia</Text>
             </View> 
             
             <View style={styles.visualNumericData}>
@@ -220,24 +213,24 @@ export default function Dashboard() {
                 <Text style = {[styles.headerText,{alignSelf: 'center', fontSize: 28, color: colors.BKLightBlue}]}>Nồng độ khí gas</Text>
                 <LineChart
                     data={{
-                        // labels: [],
+                        labels: gas.time,
                         datasets: [
                             {
                                 data: gas.data
                             }
                         ]
                     }}
-                    width={screen.width * 0.95} // from react-native
+                    width={screen.width * 0.9} // from react-native
                     height={220}
                     // yAxisLabel="$"
                     yAxisSuffix="%"
                     yAxisInterval={1} // optional, defaults to 1
                     chartConfig={{
                         backgroundColor: "#e26a00",
-                        backgroundGradientFrom: "#83A4F9",
-                        backgroundGradientTo: colors.BKDarkBlue,
-                        decimalPlaces: 1, // optional, defaults to 2dp
-                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                        backgroundGradientFrom: '#aee1f9',
+                        backgroundGradientTo: '#aee1f9',
+                        decimalPlaces: 0, // optional, defaults to 2dp
+                        color: (opacity = 1, dataPoint) => `rgba(0, 0, 0, ${opacity})`,
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         style: {
                             borderRadius: 16,
@@ -248,11 +241,20 @@ export default function Dashboard() {
                             stroke: colors.white
                         },
                         propsForLabels:{
-                            fontSize: 20,
+                            fontSize: 22,
                             fontFamily: "Digital-7"
+                        },
+                        propsForVerticalLabels:{
+                            fontSize: 18,
                         }
+                        
                     }}
-                    // bezier
+                    getDotColor={(dataPoint) => {
+                        if (dataPoint >= 40) return 'red'
+                        else return 'black'
+                    }}
+                    segments = {3}
+                    // fromZero = {true}
                     style={{
                         marginVertical: 8,
                         borderRadius: 16,
@@ -264,7 +266,7 @@ export default function Dashboard() {
             <View style={styles.controller}>
                 <FlatList
                     data={Object.values(devices)}
-                    renderItem={({item}) => <ControllerCard screen={screen} {...item}/>}
+                    renderItem={({item}) => <ControllerCard screen={screen} navigation = {navigation} {...item}/>}
                     keyExtractor={item => item.id}
                     key = {2}
                     numColumns = {2}
@@ -289,12 +291,15 @@ const styles = StyleSheet.create({
         // backgroundColor: 'black',
     },
     controller: {
-        flex: 3,
+        flex: 2.5,
         // backgroundColor: 'black',
-        paddingTop: 20
+        // padding:20,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     headerText: {
         fontFamily: 'Nunito-Medium',
-        fontSize: 18
-    }
+        fontSize: 18,
+        marginLeft: 10
+    },
 });
