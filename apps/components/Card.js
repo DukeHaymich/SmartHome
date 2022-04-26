@@ -5,7 +5,6 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native';
-import { color } from 'react-native-reanimated';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { colors } from '../scripts/colors';
@@ -47,7 +46,7 @@ function ControllerCard(props) {
         <TouchableWithoutFeedback
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
-            // onPress={handlePress}
+            onPress={handlePress}
         >
             <View style = {styles.outerBtn}>
                 <LinearGradient 
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
         flex: 1
     },
     description: {
-        color: colors.lightBlue,
+        color: colors.BKLightBlue,
         fontFamily: 'Digital-7-Mono',
         textAlignVertical: 'bottom',
     },

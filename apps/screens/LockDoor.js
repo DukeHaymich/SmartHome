@@ -1,17 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View ,TouchableOpacity} from 'react-native'
 import React from 'react'
 
-const LockDoor = () => {
+export default function LockDoor({navigation}) {
   return (
-    <View>
+    <TouchableOpacity style = {styles.btn} onPress = {() => {navigation.pop()}}>
       <Text>LockDoor</Text>
-    </View>
+    </TouchableOpacity>
   )
 }
 
-export default LockDoor
-
-const styles = StyleSheet.create({
-    
-
-})
+const styles = StyleSheet.create({})

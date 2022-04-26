@@ -189,8 +189,8 @@ export default function Dashboard({navigation}) {
     return (
         <SafeAreaView style={styles.container}>
             <View style = {{marginVertical: 5, marginHorizontal:10}}> 
-                <Text style = {[styles.headerText,{opacity: 0.5}]}>Xin chào,</Text>
-                <Text style = {[styles.headerText,{fontWeight: '700', marginLeft: 15, fontSize: 23}]}>Sơn Đại Gia</Text>
+                <Text style = {[styles.headerText,{opacity: 0.5}]}>Xin chào!</Text>
+                <Text style = {[styles.headerText,{fontWeight: '700', fontSize: 23}]}>Sơn Đại Gia</Text>
             </View> 
             
             <View style={styles.visualNumericData}>
