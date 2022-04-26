@@ -6,6 +6,7 @@ export const AuthContext = createContext();
 
 export default function AuthProvider({children}) {
   const [userToken, setUserToken] = useState(null);
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
   return (
     <AuthContext.Provider
@@ -44,6 +45,10 @@ export default function AuthProvider({children}) {
             console.log(e);
           }
         },
+        theme: {
+          isDarkMode: isDarkMode,
+          toggleDarkMode: () => {setIsDarkMode(!isDarkMode)},
+        }
       }}>
       {children}
     </AuthContext.Provider>
