@@ -41,7 +41,7 @@ function ControllerCard(props) {
     const handlePress = () => {
         navigation.navigate(props.title);
     }
-    const gradColor = isPressed ? ['#f6ebe6', '#aee1f9'] : ['#aee1f9','#f6ebe6']
+    const gradColor = isPressed ? ['#f6ebe6', '#aee1f9'] : ['#aee1f9','#f6ebe6'];
     return (
         <TouchableWithoutFeedback
             onPressIn={handlePressIn}
@@ -133,10 +133,10 @@ const styles = StyleSheet.create({
     outerBtn: {
         width: 150,
         borderRadius: 25,
-        shadowColor: '#6682b0',
+        shadowColor: 'black',
         aspectRatio: 1,
         margin: 20,
-        elevation: 15
+        elevation: 5
     },
 });
 

@@ -7,23 +7,27 @@ import {
     Text,
     TouchableOpacity,
     View,
-    useWindowDimensions
+    useWindowDimensions,
+    TouchableWithoutFeedback
 } from 'react-native';
 import {
     LineChart
 } from "react-native-chart-kit";
 
+import FlashMessage,{ showMessage } from "react-native-flash-message";
 import MqttService from '../core/services/MqttService';
 
 import { NumericCard, ControllerCard } from '../components/Card';
 import { colors } from '../scripts/colors';
+// import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 
 
 export default function Dashboard({navigation}) {
     const screen = useWindowDimensions();
     const [ today, setToday ] = useState(new Date());
-
+    const [sectorColor, setSectorColor] = useState("rgba(0, 0, 0, 1)");
+    const [checkData, setCheckData] = useState(false);
     const [ numericData, numericDataDispatch ] = useReducer((state, action) => {
         switch(action.type) {
             case 'TEMPERATURE':{
@@ -74,7 +78,8 @@ export default function Dashboard({navigation}) {
                     newState.time.shift();
                 }
                 newState.data = [...newState.data, data];
-                newState.time = [...newState.time, time]
+                
+                newState.time = [...newState.time, time];
                 return newState;
             }
             default: {
@@ -87,6 +92,21 @@ export default function Dashboard({navigation}) {
         time: [today.toLocaleTimeString()],
         unit: '%'
     })
+    useEffect(()=>{
+        var set = new Set(gas.data);
+        if (set.size === 1){
+            setCheckData(true);
+        }
+        else{
+            setCheckData(false);
+        }
+        if (gas.data[gas.data.length-1] >= 40){
+            setSectorColor('rgba(255, 0, 0, 1)');
+        }
+        else{
+            setSectorColor('rgba(0, 0, 0, 1)');
+        }
+    },[gas])
 
     const [ devices, setDevices ] = useReducer((state, action) => {
         switch(action.type) {
@@ -116,7 +136,6 @@ export default function Dashboard({navigation}) {
             icon: 'user-shield',
         },
     })
-
 
     const onGasTopic = message => {
         setGas({
@@ -212,6 +231,13 @@ export default function Dashboard({navigation}) {
             <View style={styles.graph}>
                 <Text style = {[styles.headerText,{alignSelf: 'center', fontSize: 28, color: colors.BKLightBlue}]}>Nồng độ khí gas</Text>
                 <LineChart
+                    // onDataPointClick={({value, getColor}) =>
+                    //     showMessage({
+                    //         message: `${value}`,
+                    //         description: 'You selected this value',
+                    //         backgroundColor: getColor(0.9)
+                    //     })
+                    // }
                     data={{
                         labels: gas.time,
                         datasets: [
@@ -224,13 +250,13 @@ export default function Dashboard({navigation}) {
                     height={220}
                     // yAxisLabel="$"
                     yAxisSuffix="%"
-                    yAxisInterval={1} // optional, defaults to 1
+                    yAxisInterval={6} // optional, defaults to 1
                     chartConfig={{
-                        backgroundColor: "#e26a00",
-                        backgroundGradientFrom: '#aee1f9',
-                        backgroundGradientTo: '#aee1f9',
+                        // backgroundColor: "#e26a00",
+                        backgroundGradientFrom: '#c3e8fa',
+                        backgroundGradientTo: '#c3e8fa',
                         decimalPlaces: 0, // optional, defaults to 2dp
-                        color: (opacity = 1, dataPoint) => `rgba(0, 0, 0, ${opacity})`,
+                        color: () => sectorColor,
                         labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
                         style: {
                             borderRadius: 16,
@@ -250,11 +276,15 @@ export default function Dashboard({navigation}) {
                         
                     }}
                     getDotColor={(dataPoint) => {
-                        if (dataPoint >= 40) return 'red'
-                        else return 'black'
+                        if (dataPoint >= 40) {
+                            return 'red';
+                        }
+                        else {
+                            return 'black'
+                        }
                     }}
                     segments = {3}
-                    // fromZero = {true}
+                    fromZero = {checkData}
                     style={{
                         marginVertical: 8,
                         borderRadius: 16,
@@ -262,7 +292,7 @@ export default function Dashboard({navigation}) {
                     }}
                 />
             </View>
-
+            {/* <FlashMessage duration={5000} /> */}
             <View style={styles.controller}>
                 <FlatList
                     data={Object.values(devices)}
