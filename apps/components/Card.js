@@ -1,9 +1,10 @@
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import {
     StyleSheet,
     Text,
     TouchableWithoutFeedback,
     View,
+    useWindowDimensions,
 } from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -11,11 +12,11 @@ import { colors } from '../scripts/colors';
 import LinearGradient from 'react-native-linear-gradient';
 
 function NumericCard(props) {
-    const screen = props.screen;
+    const screen = useWindowDimensions();
     return (
         <View style={[
             styles.container,
-            { width: 0.5*screen.width }
+            { width: 0.5 * screen.width }
         ]}>
             <View style={styles.headerNumeric}>
                 <Text style={styles.headerText}>{props.title}</Text>
@@ -29,32 +30,29 @@ function NumericCard(props) {
 }
 
 function ControllerCard(props) {
-    const screen = props.screen;
-    const navigation = props.navigation;
-    const [ isPressed, setPressed] = useState(false);
+    const [isPressed, setPressed] = useState(false);
     const handlePressIn = useCallback(() => {
         setPressed(true);
     }, [setPressed]);
     const handlePressOut = useCallback(() => {
         setPressed(false);
     }, [setPressed]);
-    const handlePress = () => {
-        navigation.navigate(props.title);
-    }
-    const gradColor = isPressed ? ['#f6ebe6', '#aee1f9'] : ['#aee1f9','#f6ebe6'];
+    const handlePress = props.onPress
+    const gradColorReverse = props.gradColor.slice().reverse();
+    const gradColor = (isPressed ? props.gradColor : gradColorReverse);//
     return (
         <TouchableWithoutFeedback
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             onPress={handlePress}
         >
-            <View style = {styles.outerBtn}>
-                <LinearGradient 
-                    colors={gradColor} 
+            <View style={styles.outerBtn}>
+                <LinearGradient
+                    colors={gradColor}
                     style={styles.btn}
-                    useAngle = {true}
-                    angle = {145}
-                    angleCenter = {{x : 0.5, y: 0.5 }}
+                    useAngle={true}
+                    angle={145}
+                    angleCenter={{ x: 0.5, y: 0.5 }}
                 >
                     <FontAwesome5
                         name={props.icon}
@@ -66,13 +64,13 @@ function ControllerCard(props) {
             </View>
         </TouchableWithoutFeedback>
     )
-} 
+}
 
 const styles = StyleSheet.create({
     container: {
         // borderRadius: 10,
         flex: 1,
-        
+
     },
     headerNumeric: {
         height: 42,
@@ -125,7 +123,7 @@ const styles = StyleSheet.create({
         color: colors.BKLightBlue,
     },
     btn: {
-        justifyContent: 'center', 
+        justifyContent: 'center',
         alignItems: 'center',
         aspectRatio: 1,
         borderRadius: 25,

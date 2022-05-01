@@ -7,11 +7,14 @@ export const colors = {
     gray: '#757575',
     lightGray: '#A4A4A4',
     darkGray: '#333',
-    neon: '#1DFF1D',
+    neonGreen: '#1DFF1D',
+    neonRed: '#ff2121',
     white: '#fcfcfc',
     black: '#000',
     red: '#f00',
     blue: '#016BD9',
     yellow: '#f90',
     transparent: '#0000',
+    controlBackground: '#016BD9',
+    controlBackgroundLight: '#6bb4ff'
 }
