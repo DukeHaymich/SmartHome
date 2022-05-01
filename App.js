@@ -5,6 +5,7 @@ import { LogBox } from 'react-native';
 import Routes from './apps/routes/Routes';
 import Splash from './apps/screens/Splash';
 import AuthProvider from './apps/scripts/AuthProvider';
+import DatabaseProvider from './apps/scripts/DatabaseProvider'
 
 
 LogBox.ignoreLogs([
@@ -35,7 +36,9 @@ export default function App() {
 
     return (
         <AuthProvider>
+        <DatabaseProvider>
             <Routes/>
+        </DatabaseProvider>
         </AuthProvider>
     );
 }
