@@ -6,6 +6,7 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
+    // TouchableHighlight,
     View,
     useWindowDimensions,
     TouchableWithoutFeedback
@@ -14,7 +15,7 @@ import {
     LineChart
 } from "react-native-chart-kit";
 
-import FlashMessage,{ showMessage } from "react-native-flash-message";
+import Tooltip from 'react-native-walkthrough-tooltip';
 import MqttService from '../core/services/MqttService';
 
 import { NumericCard, ControllerCard } from '../components/Card';
@@ -204,7 +205,7 @@ export default function Dashboard({navigation}) {
             );
         }
     }, []);
-
+    const [openTool, setOpenTool] = useState(false);
     return (
         <SafeAreaView style={styles.container}>
             <View style = {{marginVertical: 5, marginHorizontal:10}}> 
@@ -231,13 +232,9 @@ export default function Dashboard({navigation}) {
             <View style={styles.graph}>
                 <Text style = {[styles.headerText,{alignSelf: 'center', fontSize: 28, color: colors.BKLightBlue}]}>Nồng độ khí gas</Text>
                 <LineChart
-                    // onDataPointClick={({value, getColor}) =>
-                    //     showMessage({
-                    //         message: `${value}`,
-                    //         description: 'You selected this value',
-                    //         backgroundColor: getColor(0.9)
-                    //     })
-                    // }
+                    // onDataPointClick={({value, getColor}) => {
+                    //     setOpenTool(true);
+                    // }}
                     data={{
                         labels: gas.time,
                         datasets: [
@@ -283,6 +280,19 @@ export default function Dashboard({navigation}) {
                             return 'black'
                         }
                     }}
+                    // renderDotContent={(x,y,index,indexData) => {
+                    //     return(
+                    //         <Tooltip
+                    //             content={
+                    //                 <View><Text>{indexData}</Text></View>
+                    //             }
+                    //             placement='center'
+                    //             isVisible={openTool}
+                    //             onClose={()=>setOpenTool(false)}
+                    //         >
+                    //         </Tooltip>
+                    //     )
+                    // }}
                     segments = {3}
                     fromZero = {checkData}
                     style={{
@@ -292,7 +302,6 @@ export default function Dashboard({navigation}) {
                     }}
                 />
             </View>
-            {/* <FlashMessage duration={5000} /> */}
             <View style={styles.controller}>
                 <FlatList
                     data={Object.values(devices)}

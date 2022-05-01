@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
         shadowColor: 'black',
         aspectRatio: 1,
         margin: 20,
-        elevation: 5
+        elevation: 10
     },
 });
 

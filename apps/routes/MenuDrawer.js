@@ -28,10 +28,7 @@ export default function Drawer() {
                 options={({ navigation }) => {
                     return {
                         drawerIcon: ({color}) => (<MaterialIcons name = 'home' size={25} color= {color}/>),
-                        header: () => <Header
-                            navigation={navigation}
-                            title='Trang nhà'
-                        />,
+                        headerShown: false
                     }
                 }}
                 />
