@@ -14,10 +14,9 @@ export default function Routes() {
 
     const onAuthStateChanged = token => {
         user.setToken(prev=>{
-            if (token!=prev){
-                if (token) dbContext.updateLoginHistory();
+            if (!prev && token && token.uid) {
+                dbContext.updateLoginHistory(token.uid);
             }
-            // token=prev
             return token;
         });
         if (initializing) setInitializing(false);
@@ -31,9 +30,8 @@ export default function Routes() {
     if (initializing) return null;
 
     return (
-        
         <NavigationContainer>
-            {user.token == null ? <LoginStack /> :<Drawer /> }
+        {user.token == null ? <LoginStack /> :<Drawer /> }
         </NavigationContainer>
     );
 }

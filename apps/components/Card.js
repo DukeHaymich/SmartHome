@@ -29,7 +29,7 @@ function NumericCard(props) {
     )
 }
 
-function ControllerCard(props) {
+function ControllerCard({style, ...props}) {
     const [isPressed, setPressed] = useState(false);
     const handlePressIn = useCallback(() => {
         setPressed(true);
@@ -58,9 +58,10 @@ function ControllerCard(props) {
                     <FontAwesome5
                         name={props.icon}
                         size={50}
-                        style={styles.icon}
+                        style={[styles.icon, style]}
+                        solid={true}
                     />
-                    <Text style={styles.label}>{props.title}</Text>
+                    <Text style={[styles.label, style]}>{props.title}</Text>
                 </LinearGradient>
             </View>
         </TouchableWithoutFeedback>
@@ -115,10 +116,10 @@ const styles = StyleSheet.create({
         // flexDirection: 'row',
     },
     label: {
-        fontFamily: 'Nunito-Medium',
+        // fontFamily: 'Nunito-SemiBold',
         fontSize: 20,
-        // fontWeight: '600'
-        marginTop: 5
+        fontWeight: '600',
+        marginTop: 5,
     },
     icon: {
         color: colors.BKLightBlue,

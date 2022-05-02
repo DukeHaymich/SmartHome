@@ -1,86 +1,82 @@
-import React, { createContext, useState, useEffect } from 'react';
-import  database, { firebase } from '@react-native-firebase/database';
-import { NetworkInfo } from 'react-native-network-info';
+import React, { createContext, useState } from 'react';
+import  { firebase } from '@react-native-firebase/database';
 import publicIP from 'react-native-public-ip';
-import { getMacAddress } from 'react-native-device-info';
-import GetLocation from 'react-native-get-location'
 
 export const DatabaseContext = createContext(
     {
         fetchLoginHistory: () => { },
         fetchDeviceLog: () => { },
         updateLoginHistory: () => { },
+        addDeviceLog: ()=>{},
         loginHistory: [],
-        deviceLog: []
+        deviceLog: [],
     }
 );
 
 const db = firebase.app().database('https://bk-smart-home-default-rtdb.firebaseio.com/')
-
 export default function DatabaseProvider({children}) {
     const [loginH, setLoginH] = useState([]);
     const [devLog, setDevLog] = useState([]);
-    const fetchLoginHistoryHandler = () => {
-        db.ref('/loginLog').once('value', snapshot => {
-            v = snapshot.val();
-            // console.log(v)
-            // for (x in v) {
-                // console.log(x);
-            // }
-            setLoginH(v);
+
+    const fetchLoginHistoryHandler = (userId) => {
+        if (!userId) return;
+        db.ref('/users/'+userId+'/loginLog').once('value', snapshot => {
+            const l = Object.entries(snapshot.val());
+            l.sort((a,b)=>b[1].time-a[1].time)
+            console.log(l)
+            setLoginH(l);
         })
     }
-    const updateLoginHistoryHandler = () => {
-        const now = (new Date()).toString();
-        
-        GetLocation.getCurrentPosition({
-          enableHighAccuracy: true,
-          timeout: 15000,
+
+    const updateLoginHistoryHandler = (userId) => {
+      if (!userId) return;
+      publicIP()
+        .then(ip => {
+          fetch('https://ipinfo.io/'+ip+'?token=c3e8fe3ca36e9e').then(response => response.json())
+          .then(data=>{
+            db.ref('/users/'+userId+'/loginLog').update(
+              { [ip.split('.').join(',')]: 
+                { 
+                  time :Date.now(), 
+                  location : data.city
+                }
+              }
+              ).then(() => {
+                console.log('loginLog updated');
+            })
+          })
+          .catch(error => {
+            console.log(error);
+          });
         })
-        .then(location => {
-          console.log(location);
-        })
-        .catch(error => {
-          const { code, message } = error;
-          console.warn(code, message);
-        })
-        getMacAddress().then(
-          mac=>{
-            console.log(mac);
-          }
-        )
-        // publicIP()
-        // .then(ip => {
-        //   ip = ip.split('.').join(',')
-        //   console.log(ip);
-        //   db.ref('/loginLog').update({ [ip]: now }).then(() => {
-        //       console.log('DataUpdated');
-        //   })
-        //   // '47.122.71.234'
-        // })
-        // .catch(error => {
-        //   console.log(error);
-        //   // 'Unable to get IP address.'
-        // });
+
+        fetchLoginHistoryHandler(userId);
     }
     
-    const fetchDeviceLogHandler = ()=>{
-        db.ref('/users').once('value',snapshot=>{
+    const fetchDeviceLogHandler = (userId)=>{
+      if (!userId) return;
+      db.ref('/users/'+userId+'/devLog').once('value',snapshot=>{
             v=snapshot.val();
-            console.log(v)
-            for (x in v){
-            console.log(x);
-            }
             setDevLog(v);
         })
     }
+
+    const addDeviceLogHandler = (userId,device,log)=>{
+      if (!userId) return;
+      const newReference =db.ref('/users/'+userId+'/devLog').push();
+      newReference.set({
+        [device]:log
+      }).then('deviceLog updated');
+    }
+
 
     const context = {
         fetchLoginHistory:fetchLoginHistoryHandler,
         fetchDeviceLog:fetchDeviceLogHandler,
         updateLoginHistory:updateLoginHistoryHandler,
+        addDeviceLog:addDeviceLogHandler,
         loginHistory:loginH,
-        deviceLog:devLog
+        deviceLog:devLog,
     }
     return (
         <DatabaseContext.Provider

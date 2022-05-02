@@ -133,7 +133,6 @@ export default function Dashboard({ navigation }) {
             data: message,
         });
     };
-    const onFraudDetectTopic = message => { };
     const onFireDetectTopic = message => { };
     const onFireAlarmTopic = message => { };
 
@@ -141,25 +140,27 @@ export default function Dashboard({ navigation }) {
         MqttService.subscribe('duke_and_co/feeds/visual-igas', onGasTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-ftemp', onTemperatureTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-ihumid', onHumidityTopic);
-        MqttService.subscribe('duke_and_co/feeds/visual-bwarningfraud', onFraudDetectTopic,);
         MqttService.subscribe('duke_and_co/feeds/visual-bwarningfire', onFireDetectTopic);
         MqttService.subscribe('duke_and_co/feeds/action-bnotifyfirebuzzer', onFireAlarmTopic);
         // Get latest value
         MqttService.publishMessage('duke_and_co/feeds/visual-igas/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/visual-ftemp/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/visual-ihumid/get', 'duke_n_co');
-        MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfraudbuzzer/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfirebuzzer/get', 'duke_n_co');
     };
 
     const mqttConnectionLostHandler = () => { };
 
     useEffect(() => {
-        if (MqttService && MqttService.isConnected) {
-            MqttService.disconnect();
-        }
-        if (MqttService && !MqttService.isConnected) {
-            MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler);
+        try {
+            if (MqttService && MqttService.isConnected) {
+                MqttService.disconnect();
+            }
+            if (MqttService && !MqttService.isConnected) {
+                MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler);
+            }
+        } catch (e) {
+            console.log(e)
         }
     }, []);
     const [openTool, setOpenTool] = useState(false);
@@ -262,7 +263,7 @@ export default function Dashboard({ navigation }) {
                     data={Object.values(devices)}
                     renderItem={({ item }) => (
                         <ControllerCard
-                            gradColor={['#f6ebe6', '#aee1f9']}
+                            gradColor={[ '#aee1f9','#f6ebe6']}
                             onPress={() => navigation.navigate(item.title)}
                             {...item}
                         />
@@ -294,6 +295,7 @@ const styles = StyleSheet.create({
         flex: 2.5,
         // backgroundColor: 'black',
         // padding:20,
+        // marginRight: 10,
         justifyContent: 'center',
         alignItems: 'center',
     },

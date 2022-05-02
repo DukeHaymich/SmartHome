@@ -18,20 +18,20 @@ import { colors } from '../scripts/colors'
 export default function LockDoor() {
     const [status, setStatus] = useState({
         title: 'Đang tải...',
-        status: null,
+        isOn: null,
     });
 
     const onDoorLockTopic = message => {
         if (message == 1) {
             setStatus({
                 title: 'Đang khóa',
-                status: 1,
+                isOn: 1,
             })
         }
         else {
             setStatus({
                 title: 'Đang mở',
-                status: 0,
+                isOn: 0,
             })
         }
     };
@@ -45,20 +45,20 @@ export default function LockDoor() {
     const iconHomeLock = ['home-lock-open', 'home-lock'];
     const colorList = [colors.neonRed, colors.neonGreen];
     const handlePress = () => {
-        var data = (1 - status.status).toString();
+        var data = (1 - status.isOn).toString();
         MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate', data);
     }
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.status}>
-                <View style={[styles.iconContainer, { borderColor: colorList[status.status], shadowColor: colorList[status.status] }]}>
+                <View style={[styles.iconContainer, { borderColor: colorList[status.isOn], shadowColor: colorList[status.isOn] }]}>
                     <MaterialCommunityIcons
-                        name={iconHomeLock[status.status]} // home-lock-open
+                        name={iconHomeLock[status.isOn]} // home-lock-open
                         size={144}
-                        style={[styles.icon, { color: colorList[status.status] }]}
+                        style={[styles.icon, { color: colorList[status.isOn] }]}
                     />
                 </View>
-                <Text style={[styles.statusText, { color: colorList[status.status] }]}>
+                <Text style={[styles.statusText, { color: colorList[status.isOn] }]}>
                     {status.title}
                 </Text>
             </View>

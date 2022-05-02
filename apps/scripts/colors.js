@@ -8,7 +8,7 @@ export const colors = {
     lightGray: '#A4A4A4',
     darkGray: '#333',
     neonGreen: '#1DFF1D',
-    neonRed: '#ff2121',
+    neonRed: '#990000', //'#cf2204',
     white: '#fcfcfc',
     black: '#000',
     red: '#f00',
@@ -17,9 +17,8 @@ export const colors = {
     transparent: '#0000',
     controlBackground: '#016BD9',
     controlBackgroundLight: '#6bb4ff',
-    buttonOn: '#5aff15',
-    buttonOnLight: '#00b712',
-    buttonOff: '#ff0000',
-    buttonOffLight: '#990000'
-
+    buttonOn: '#00b712',
+    buttonOnLight: '#5aff15',
+    buttonOff: '#990000',
+    buttonOffLight: '#ff0000',
 }

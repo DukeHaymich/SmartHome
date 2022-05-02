@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     SafeAreaView,
@@ -13,35 +13,99 @@ import { isDisabled } from 'react-native/Libraries/LogBox/Data/LogBoxData';
 // import LinearGradient from 'react-native-linear-gradient';
 
 export default function FraudDetector() {
-    const [isDisabled, setDisabled] = useState(false);
-    const gradColor = [colors.buttonOn,colors.buttonOnLight];
-    const gradColorDisabled = [colors.buttonOff, colors.buttonOffLight];
+    // const [isOff, setOff] = useState(false);
+    // const [isAuto, setAuto] = useState(true);
+    const gradColorBG = [colors.controlBackground,colors.controlBackgroundLight];
+    const gradColorOn = [colors.buttonOn, colors.buttonOnLight];
+    const gradColorOff = [colors.buttonOff,colors.buttonOffLight];
+    const gradColorDisabled = ['#2d3033','#5e636b'];
+
+    const [status, setStatus] = useState({
+        title: 'Đang tải...',
+        isAuto: 0,
+        isOff: 0,
+    });
+    const colorList = [colors.neonGreen, colors.neonRed];
+    
+    const onFraudDetectTopic = message => {
+    };
+
+    const onFraudConfigTopic = message => {
+        if (message == 1) {
+            setStatus({
+                ...status,
+                title: 'Đang hoạt động',
+                isOff: 0,
+            })
+        }
+        else {
+            setStatus({
+                ...status,
+                title: 'Đang tắt',
+                isOff: 1,
+            })
+        }
+    };
+
+    const handleAuto = () => {
+        if (status.isAuto) {
+            setStatus({
+                ...status,
+                isAuto: 0,
+            })
+        }
+        else {
+            setStatus({
+                ...status,
+                isAuto: 1,
+            })
+        }
+    };
+
+    const toggleOnOff = () => {
+        var data = status.isOff.toString();
+        MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfraudbuzzer', data);
+    }
+
+    useEffect(() => {
+        if (MqttService && MqttService.isConnected) {
+            MqttService.subscribe('duke_and_co/feeds/visual-bwarningfraud', onFraudDetectTopic);
+            MqttService.subscribe('duke_and_co/feeds/action-bnotifyfraudbuzzer', onFraudConfigTopic);
+            MqttService.publishMessage('duke_and_co/feeds/visual-bwarningfraud/get', 'duke_n_co');
+            MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfraudbuzzer/get', 'duke_n_co');
+        }
+    }, []);
+
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.status}>
-                <View style={styles.iconContainer}>
+                <View style={[styles.iconContainer,{ borderColor: colorList[status.isOff], shadowColor: colorList[status.isOff] }]}>
                     <MaterialCommunityIcons
-                        name='home-lock' // home-lock-open
+                        name={status.isOff ? 'shield-alert-outline' : 'shield-lock'}
                         size={144}
-                        style={styles.icon}
+                        style={[styles.icon,{ color: colorList[status.isOff] }]}
                     />
                 </View>
-                <Text style={styles.statusText}>
-                    Đang đóng
+                <Text style={[styles.statusText,{ color: colorList[status.isOff] }]}>
+                    {status.title}
                 </Text>
             </View>
             <View style={styles.controlContainer}>
                 <ControllerCard
-                    gradColor={isDisabled ? gradColorDisabled : gradColor }
-                    onPress={() => {}}
-                    disabled = {isDisabled}
-                    title = 'Thủ công'
+                    gradColor={gradColorBG}
+                    onPress={handleAuto}
+                    // disabled = {isDisabled}
+                    icon={status.isAuto ? 'hand-paper': 'cogs'}
+                    title={status.isAuto ? 'Thủ công' : 'Tự động'}
+                    style={{color: '#fff',fontWeight: '900'}}
                 />
                 <ControllerCard
-                    gradColor={isDisabled ? gradColorDisabled : gradColor}
-                    onPress={() => {setDisabled(!isDisabled)}}
-                    disabled = {isDisabled}
-                    title = 'Tự động'
+                    gradColor={status.isAuto ? gradColorDisabled : (status.isOff ? gradColorOn : gradColorOff ) }
+                    onPress={toggleOnOff}
+                    disabled = {status.isAuto}
+                    icon = {'power-off'}
+                    title = {status.isAuto ? 'Mở / Tắt' : (status.isOff ? 'Mở' : 'Tắt')}
+                    style = {{color: '#fff', fontWeight: '900'}}
                 />
             </View>
         
@@ -83,8 +147,8 @@ const styles = StyleSheet.create({
     controlContainer: {
         flex: 2,
         flexDirection: 'row',
-        justifyContent: 'center'
+        justifyContent: 'space-evenly',
 
-        // backgroundColor: 'red',
+        // backgroundColor: '',
     },
 })
