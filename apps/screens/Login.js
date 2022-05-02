@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     button: {
         width: '80%',
         height: 50,
-        backgroundColor: colors.neon,
+        backgroundColor: colors.neonGreen,
         borderRadius: 7.5,
         alignSelf: 'center',
         alignItems: 'center',
