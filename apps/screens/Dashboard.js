@@ -135,7 +135,6 @@ export default function Dashboard({ navigation }) {
     };
     const onFraudDetectTopic = message => { };
     const onFireDetectTopic = message => { };
-    const onFraudAlarmTopic = message => { };
     const onFireAlarmTopic = message => { };
 
     const mqttSuccessHandler = () => {
@@ -144,7 +143,6 @@ export default function Dashboard({ navigation }) {
         MqttService.subscribe('duke_and_co/feeds/visual-ihumid', onHumidityTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-bwarningfraud', onFraudDetectTopic,);
         MqttService.subscribe('duke_and_co/feeds/visual-bwarningfire', onFireDetectTopic);
-        MqttService.subscribe('duke_and_co/feeds/action-bnotifyfraudbuzzer', onFraudAlarmTopic);
         MqttService.subscribe('duke_and_co/feeds/action-bnotifyfirebuzzer', onFireAlarmTopic);
         // Get latest value
         MqttService.publishMessage('duke_and_co/feeds/visual-igas/get', 'duke_n_co');

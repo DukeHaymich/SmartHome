@@ -23,13 +23,13 @@ import { colors } from '../scripts/colors';
 
 export default function Login() {
     const { login } = useContext(AuthContext);
-    const [ isFocused, setIsFocused ] = useState({
+    const [isFocused, setIsFocused] = useState({
         username: false,
         password: false
     });
-    const [ username, setUsername ] = useState("");
-    const [ password, setPassword ] = useState("");
-    const [ warningText, setWarningText ] = useState("");
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [warningText, setWarningText] = useState("");
     const refInputUsername = useRef();
     const refInputPassword = useRef();
 
@@ -56,122 +56,122 @@ export default function Login() {
     }
 
     const onUsernameFocus = () => {
-        setIsFocused((prev) => ({...prev, username: true}));
+        setIsFocused((prev) => ({ ...prev, username: true }));
     }
 
     const onUsernameBlur = () => {
         if (username) {
             setWarningText('');
         }
-        setIsFocused((prev) => ({...prev, username: false}));
+        setIsFocused((prev) => ({ ...prev, username: false }));
     }
-    
+
     const onPasswordFocus = () => {
-        setIsFocused((prev) => ({...prev, password: true}));
+        setIsFocused((prev) => ({ ...prev, password: true }));
     }
-    
+
     const onPasswordBlur = () => {
         if (password) {
             setWarningText('');
         }
-        setIsFocused((prev) => ({...prev, password: false}));
+        setIsFocused((prev) => ({ ...prev, password: false }));
     }
 
     return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <SafeAreaView style={styles.screen}>
-            {/* <Shadow setting={styles.logoShadow}> */}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <SafeAreaView style={styles.screen}>
+                {/* <Shadow setting={styles.logoShadow}> */}
                 <Image
                     source={require('../assets/images/logo.png')}
                     style={styles.logo}
                 />
-            {/* </Shadow> */}
-            <Text style = {styles.title}>SMART HOME</Text>
-            <Text style = {styles.slogan}>Your choice to the future!</Text>
-            <View style = {[styles.textContainer, (isFocused.username ? styles.textFocus : {})]}>
-                <MaterialIcons
-                    name='email'
-                    color={isFocused.username ? colors.BKLightBlue : colors.gray}
-                    size={30}
-                />
-                <TextInput
-                    editable
-                    placeholder='Nhập địa chỉ email...'
-                    placeholderTextColor={isFocused.username ? colors.lightGray : colors.lightGray}
-                    value={username}
-                    returnKeyType='next'
-                    autoFocus={true}
-                    onSubmitEditing={() => refInputPassword.current.focus()}
-                    onFocus={onUsernameFocus}
-                    onBlur={onUsernameBlur}
-                    onChangeText={(value) => setUsername(value)}
-                    blurOnSubmit={false}
-                    ref={refInputUsername}
-                    style={[styles.textBox,
+                {/* </Shadow> */}
+                <Text style={styles.title}>SMART HOME</Text>
+                <Text style={styles.slogan}>Your choice to the future!</Text>
+                <View style={[styles.textContainer, (isFocused.username ? styles.textFocus : {})]}>
+                    <MaterialIcons
+                        name='email'
+                        color={isFocused.username ? colors.BKLightBlue : colors.gray}
+                        size={30}
+                    />
+                    <TextInput
+                        editable
+                        placeholder='Nhập địa chỉ email...'
+                        placeholderTextColor={isFocused.username ? colors.lightGray : colors.lightGray}
+                        value={username}
+                        returnKeyType='next'
+                        autoFocus={true}
+                        onSubmitEditing={() => refInputPassword.current.focus()}
+                        onFocus={onUsernameFocus}
+                        onBlur={onUsernameBlur}
+                        onChangeText={(value) => setUsername(value)}
+                        blurOnSubmit={false}
+                        ref={refInputUsername}
+                        style={[styles.textBox,
                         (isFocused.username ? styles.textBoxFocus : {}),
                         (username.length != 0 ? styles.textBoxHoldValue : {})
-                    ]}
-                />
-            </View>
-            <View style={[styles.textContainer, (isFocused.password ? styles.textFocus : {})]}>
-                <MaterialIcons
-                    name='lock'
-                    color={isFocused.password ? colors.BKLightBlue : colors.gray}
-                    size={30}
-                />
-                <TextInput
-                    editable
-                    value={password}
-                    placeholder='Nhập mật khẩu...'
-                    placeholderTextColor={isFocused.password ? colors.lightGray : colors.lightGray}
-                    secureTextEntry={true}
-                    returnKeyType='done'
-                    ref={refInputPassword}
-                    onFocus={onPasswordFocus}
-                    onBlur={onPasswordBlur}
-                    onChangeText={(value) => setPassword(value)}
-                    style={[styles.textBox,
+                        ]}
+                    />
+                </View>
+                <View style={[styles.textContainer, (isFocused.password ? styles.textFocus : {})]}>
+                    <MaterialIcons
+                        name='lock'
+                        color={isFocused.password ? colors.BKLightBlue : colors.gray}
+                        size={30}
+                    />
+                    <TextInput
+                        editable
+                        value={password}
+                        placeholder='Nhập mật khẩu...'
+                        placeholderTextColor={isFocused.password ? colors.lightGray : colors.lightGray}
+                        secureTextEntry={true}
+                        returnKeyType='done'
+                        ref={refInputPassword}
+                        onFocus={onPasswordFocus}
+                        onBlur={onPasswordBlur}
+                        onChangeText={(value) => setPassword(value)}
+                        style={[styles.textBox,
                         (isFocused.password ? styles.textBoxFocus : {}),
                         (password.length != 0 ? styles.textBoxHoldValue : {})
-                    ]}
-                />
-            </View>
-            <TouchableOpacity 
-                style={styles.checkBoxContainer}
-                onPress={onRememberMeHandler}
-                activeOpacity={1}>
+                        ]}
+                    />
+                </View>
+                <TouchableOpacity
+                    style={styles.checkBoxContainer}
+                    onPress={onRememberMeHandler}
+                    activeOpacity={1}>
 
-                <CheckBox
-                    disabled={false}
-                    value={false}
-                    onValueChange={() => {}}
-                    style = {styles.checkBox}
-                />
-                <Text style = {styles.label}>Nhớ mật khẩu</Text>
-            </TouchableOpacity>
-            <Text style={styles.warning} numberOfLines={2}>
-                {warningText}
-            </Text>
-            <TouchableOpacity
-                style={styles.button}
-                activeOpacity={0.6}
-                onPress={onLoginHandler}>
-
-                <Text style = {styles.labelButton}>
-                    ĐĂNG NHẬP
+                    <CheckBox
+                        disabled={false}
+                        value={false}
+                        onValueChange={() => { }}
+                        style={styles.checkBox}
+                    />
+                    <Text style={styles.label}>Nhớ mật khẩu</Text>
+                </TouchableOpacity>
+                <Text style={styles.warning} numberOfLines={2}>
+                    {warningText}
                 </Text>
-            </TouchableOpacity>
-            <View style={styles.footer}>
-                <Text style={styles.forgotPass}> Quên mật khẩu? </Text>
-                <TouchableHighlight>
-                    <Text style={styles.labelFooter}>
-                        Lấy lại ở đây   
-                    </Text>
-                </TouchableHighlight>
-            </View>
+                <TouchableOpacity
+                    style={styles.button}
+                    activeOpacity={0.6}
+                    onPress={onLoginHandler}>
 
-        </SafeAreaView>
-    </TouchableWithoutFeedback>
+                    <Text style={styles.labelButton}>
+                        ĐĂNG NHẬP
+                    </Text>
+                </TouchableOpacity>
+                <View style={styles.footer}>
+                    <Text style={styles.forgotPass}> Quên mật khẩu? </Text>
+                    <TouchableHighlight>
+                        <Text style={styles.labelFooter}>
+                            Lấy lại ở đây
+                        </Text>
+                    </TouchableHighlight>
+                </View>
+
+            </SafeAreaView>
+        </TouchableWithoutFeedback>
     );
 }
 
@@ -292,13 +292,13 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    labelButton:{
+    labelButton: {
         color: colors.white,
         fontSize: 22,
         fontFamily: 'Nunito-ExtraBold',
         backgroundColor: colors.transparent,
     },
-    labelFooter:{
+    labelFooter: {
         color: colors.BKDarkBlue,
         fontSize: 17,
         fontFamily: 'Nunito-Regular'

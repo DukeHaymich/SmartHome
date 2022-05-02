@@ -3,7 +3,6 @@ import {
     StyleSheet,
     SafeAreaView,
     Text,
-    TouchableOpacity,
     View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -76,10 +75,8 @@ const styles = StyleSheet.create({
         height: undefined,
         aspectRatio: 1,
         borderRadius: 10000,
-        borderColor: colors.neon,
         borderWidth: 15,
-        backgroundColor: colors.BKDarkBlue,
-        shadowColor: colors.neon,
+        backgroundColor: colors.controlBackground,
         shadowOpacity: 0.48,
         shadowRadius: 11.95,
         elevation: 18,
@@ -87,10 +84,8 @@ const styles = StyleSheet.create({
     },
     icon: {
         paddingBottom: 5,
-        color: colors.neon,
     },
     statusText: {
-        color: colors.neon,
         fontSize: 36,
         fontWeight: '700',
     },
