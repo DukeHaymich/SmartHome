@@ -14,10 +14,11 @@ export default function Routes() {
 
   const onAuthStateChanged = token => {
     user.setToken(prev=>{
+      console.log(token)
       if (token!=prev){
         if (token) dbContext.updateLoginHistory();
       }
-      token=prev
+      return token;
     });
     if (initializing) setInitializing(false);
   };
