@@ -1,38 +1,80 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     StyleSheet,
     SafeAreaView,
     Text,
-    TouchableOpacity,
     View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { ControllerCard } from '../components/Card';
 
 import MqttService from '../core/services/MqttService';
 import { colors } from '../scripts/colors'
-import { ControllerCard } from '../components/Card';
-
-export default function FraudDetector() {
 
 
+
+
+export default function LockDoor() {
+    const [status, setStatus] = useState({
+        title: 'Đang tải...',
+        status: null,
+    });
+
+    const onFraudAlarmTopic = message => { };
+
+    const onDoorLockTopic = message => {
+        if (message == 1) {
+            setStatus({
+                title: 'Đang hoạt động',
+                status: 1,
+            })
+        }
+        else {
+            setStatus({
+                title: 'Đang tắt',
+                status: 0,
+            })
+        }
+    };
+
+    useEffect(() => {
+        if (MqttService && MqttService.isConnected) {
+            MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
+            MqttService.subscribe('duke_and_co/feeds/action-bnotifyfraudbuzzer', onFraudAlarmTopic);
+            MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate/get', 'duke_n_co');
+        }
+    }, []);
+    const iconFraud = ['shield-alert-outline', 'shield-home'];
+    const colorList = [colors.neonRed, colors.neonGreen];
+    const handleDetect = () => {
+        var data = (1 - status.status).toString();
+        MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate', data);
+    }
+    const handleManual = () => {
+
+    }
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.status}>
-                <View style={styles.iconContainer}>
+                <View style={[styles.iconContainer, { borderColor: colorList[status.status], shadowColor: colorList[status.status] }]}>
                     <MaterialCommunityIcons
-                        name='home-lock' // home-lock-open
+                        name={iconFraud[status.status]} // home-lock-open
                         size={144}
-                        style={styles.icon}
+                        style={[styles.icon, { color: colorList[status.status] }]}
                     />
                 </View>
-                <Text style={styles.statusText}>
-                    Đang đóng
+                <Text style={[styles.statusText, { color: colorList[status.status] }]}>
+                    {status.title}
                 </Text>
             </View>
             <View style={styles.controlContainer}>
                 <ControllerCard
-                    gradColor={['#f6ebe6', '#aee1f9']}
-                    onPress={() => { }}
+                    gradColor={[colors.controlBackground, colors.controlBackgroundLight]}
+                    onPress={handleDetect}
+                />
+                <ControllerCard
+                    gradColor={[colors.controlBackground, colors.controlBackgroundLight]}
+                    onPress={handleManual}
                 />
             </View>
         </SafeAreaView>
@@ -42,7 +84,7 @@ export default function FraudDetector() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: colors.BKDarkBlue,
+        backgroundColor: colors.controlBackground,
     },
     status: {
         flex: 3,
@@ -56,10 +98,8 @@ const styles = StyleSheet.create({
         height: undefined,
         aspectRatio: 1,
         borderRadius: 10000,
-        borderColor: colors.neon,
         borderWidth: 15,
-        backgroundColor: colors.BKDarkBlue,
-        shadowColor: colors.neon,
+        backgroundColor: colors.controlBackground,
         shadowOpacity: 0.48,
         shadowRadius: 11.95,
         elevation: 18,
@@ -67,15 +107,15 @@ const styles = StyleSheet.create({
     },
     icon: {
         paddingBottom: 5,
-        color: colors.neon,
     },
     statusText: {
-        color: colors.neon,
         fontSize: 36,
         fontWeight: '700',
     },
     controlContainer: {
         flex: 2,
+        justifyContent: 'flex-start',
+        alignItems: 'center'
         // backgroundColor: 'red',
     },
 })
