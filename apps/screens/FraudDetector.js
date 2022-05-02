@@ -10,50 +10,41 @@ import MqttService from '../core/services/MqttService';
 import { colors } from '../scripts/colors'
 import { ControllerCard } from '../components/Card';
 import { isDisabled } from 'react-native/Libraries/LogBox/Data/LogBoxData';
-import LinearGradient from 'react-native-linear-gradient';
+// import LinearGradient from 'react-native-linear-gradient';
 
 export default function FraudDetector() {
-    const [isDisabled, setDisabled] = useState(true);
+    const [isDisabled, setDisabled] = useState(false);
     const gradColor = [colors.buttonOn,colors.buttonOnLight];
     const gradColorDisabled = [colors.buttonOff, colors.buttonOffLight];
     return (
         <SafeAreaView style={styles.container}>
-            <LinearGradient
-                    colors={[colors.controlBackground, colors.controlBackgroundLight]}
-                    style={styles.container}
-                    useAngle={true}
-                    angle={30}
-                    angleCenter={{ x: 0.5, y: 0.5}}
-            >
-            
-                <View style={styles.status}>
-                    <View style={styles.iconContainer}>
-                        <MaterialCommunityIcons
-                            name='home-lock' // home-lock-open
-                            size={144}
-                            style={styles.icon}
-                        />
-                    </View>
-                    <Text style={styles.statusText}>
-                        Đang đóng
-                    </Text>
-                </View>
-                <View style={styles.controlContainer}>
-                    <ControllerCard
-                        gradColor={!isDisabled ? gradColorDisabled : gradColor }
-                        onPress={() => {setDisabled(!isDisabled)}}
-                        disabled = {!isDisabled}
-                        title = 'Thủ công'
-                    />
-                    <ControllerCard
-                        gradColor={isDisabled ? gradColorDisabled : gradColor}
-                        onPress={() => {setDisabled(!isDisabled)}}
-                        disabled = {isDisabled}
-                        title = 'Tự động'
+            <View style={styles.status}>
+                <View style={styles.iconContainer}>
+                    <MaterialCommunityIcons
+                        name='home-lock' // home-lock-open
+                        size={144}
+                        style={styles.icon}
                     />
                 </View>
-            
-        </LinearGradient>
+                <Text style={styles.statusText}>
+                    Đang đóng
+                </Text>
+            </View>
+            <View style={styles.controlContainer}>
+                <ControllerCard
+                    gradColor={isDisabled ? gradColorDisabled : gradColor }
+                    onPress={() => {}}
+                    disabled = {isDisabled}
+                    title = 'Thủ công'
+                />
+                <ControllerCard
+                    gradColor={isDisabled ? gradColorDisabled : gradColor}
+                    onPress={() => {setDisabled(!isDisabled)}}
+                    disabled = {isDisabled}
+                    title = 'Tự động'
+                />
+            </View>
+        
         </SafeAreaView>
     )
 }
@@ -61,7 +52,7 @@ export default function FraudDetector() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // backgroundColor: colors.w,
+        backgroundColor: colors.controlBackground,
     },
     status: {
         flex: 3,
