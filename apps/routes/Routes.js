@@ -8,31 +8,32 @@ import {AuthContext} from '../scripts/AuthProvider';
 import {DatabaseContext} from '../scripts/DatabaseProvider'
 
 export default function Routes() {
-  const {user} = useContext(AuthContext);
-  const dbContext = useContext(DatabaseContext);
-  const [initializing, setInitializing] = useState(true);
+    const {user} = useContext(AuthContext);
+    const dbContext = useContext(DatabaseContext);
+    const [initializing, setInitializing] = useState(true);
 
-  const onAuthStateChanged = token => {
-    user.setToken(prev=>{
-      console.log(token)
-      if (token!=prev){
-        if (token) dbContext.updateLoginHistory();
-      }
-      return token;
-    });
-    if (initializing) setInitializing(false);
-  };
+    const onAuthStateChanged = token => {
+        user.setToken(prev=>{
+            if (token!=prev){
+                if (token) dbContext.updateLoginHistory();
+            }
+            // token=prev
+            return token;
+        });
+        if (initializing) setInitializing(false);
+    };
 
-  useEffect(() => {
-    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
-    return subscriber;
-  }, []);
+    useEffect(() => {
+        const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+        return subscriber;
+    }, []);
 
-  if (initializing) return null;
+    if (initializing) return null;
 
-  return (
-    <NavigationContainer>
-      {user.token == null ? <LoginStack /> :<Drawer /> }
-    </NavigationContainer>
-  );
+    return (
+        
+        <NavigationContainer>
+            {user.token == null ? <LoginStack /> :<Drawer /> }
+        </NavigationContainer>
+    );
 }

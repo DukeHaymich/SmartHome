@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useState} from 'react';
 import {
     StyleSheet,
     SafeAreaView,
@@ -6,77 +6,45 @@ import {
     View,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { ControllerCard } from '../components/Card';
-
 import MqttService from '../core/services/MqttService';
 import { colors } from '../scripts/colors'
+import { ControllerCard } from '../components/Card';
+import { isDisabled } from 'react-native/Libraries/LogBox/Data/LogBoxData';
+// import LinearGradient from 'react-native-linear-gradient';
 
-
-
-
-export default function LockDoor() {
-    const [status, setStatus] = useState({
-        title: 'Đang tải...',
-        status: null,
-    });
-
-    const onFraudAlarmTopic = message => { };
-
-    const onDoorLockTopic = message => {
-        if (message == 1) {
-            setStatus({
-                title: 'Đang hoạt động',
-                status: 1,
-            })
-        }
-        else {
-            setStatus({
-                title: 'Đang tắt',
-                status: 0,
-            })
-        }
-    };
-
-    useEffect(() => {
-        if (MqttService && MqttService.isConnected) {
-            MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
-            MqttService.subscribe('duke_and_co/feeds/action-bnotifyfraudbuzzer', onFraudAlarmTopic);
-            MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate/get', 'duke_n_co');
-        }
-    }, []);
-    const iconFraud = ['shield-alert-outline', 'shield-home'];
-    const colorList = [colors.neonRed, colors.neonGreen];
-    const handleDetect = () => {
-        var data = (1 - status.status).toString();
-        MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate', data);
-    }
-    const handleManual = () => {
-
-    }
+export default function FraudDetector() {
+    const [isDisabled, setDisabled] = useState(false);
+    const gradColor = [colors.buttonOn,colors.buttonOnLight];
+    const gradColorDisabled = [colors.buttonOff, colors.buttonOffLight];
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.status}>
-                <View style={[styles.iconContainer, { borderColor: colorList[status.status], shadowColor: colorList[status.status] }]}>
+                <View style={styles.iconContainer}>
                     <MaterialCommunityIcons
-                        name={iconFraud[status.status]} // home-lock-open
+                        name='home-lock' // home-lock-open
                         size={144}
-                        style={[styles.icon, { color: colorList[status.status] }]}
+                        style={styles.icon}
                     />
                 </View>
-                <Text style={[styles.statusText, { color: colorList[status.status] }]}>
-                    {status.title}
+                <Text style={styles.statusText}>
+                    Đang đóng
                 </Text>
             </View>
             <View style={styles.controlContainer}>
                 <ControllerCard
-                    gradColor={[colors.controlBackground, colors.controlBackgroundLight]}
-                    onPress={handleDetect}
+                    gradColor={isDisabled ? gradColorDisabled : gradColor }
+                    onPress={() => {}}
+                    disabled = {isDisabled}
+                    title = 'Thủ công'
                 />
                 <ControllerCard
-                    gradColor={[colors.controlBackground, colors.controlBackgroundLight]}
-                    onPress={handleManual}
+                    gradColor={isDisabled ? gradColorDisabled : gradColor}
+                    onPress={() => {setDisabled(!isDisabled)}}
+                    disabled = {isDisabled}
+                    title = 'Tự động'
                 />
             </View>
+        
         </SafeAreaView>
     )
 }
@@ -114,8 +82,9 @@ const styles = StyleSheet.create({
     },
     controlContainer: {
         flex: 2,
-        justifyContent: 'flex-start',
-        alignItems: 'center'
+        flexDirection: 'row',
+        justifyContent: 'center'
+
         // backgroundColor: 'red',
     },
 })

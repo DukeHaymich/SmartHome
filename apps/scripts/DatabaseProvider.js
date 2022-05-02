@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import database, { firebase } from '@react-native-firebase/database';
+import  database, { firebase } from '@react-native-firebase/database';
 import { NetworkInfo } from 'react-native-network-info';
 import publicIP from 'react-native-public-ip';
 import { getMacAddress } from 'react-native-device-info';
@@ -17,7 +17,7 @@ export const DatabaseContext = createContext(
 
 const db = firebase.app().database('https://bk-smart-home-default-rtdb.firebaseio.com/')
 
-export default function DatabaseProvider({ children }) {
+export default function DatabaseProvider({children}) {
     const [loginH, setLoginH] = useState([]);
     const [devLog, setDevLog] = useState([]);
     const fetchLoginHistoryHandler = () => {
@@ -63,28 +63,29 @@ export default function DatabaseProvider({ children }) {
         //   // 'Unable to get IP address.'
         // });
     }
-
-    const fetchDeviceLogHandler = () => {
-        db.ref('/users').once('value', snapshot => {
-            v = snapshot.val();
+    
+    const fetchDeviceLogHandler = ()=>{
+        db.ref('/users').once('value',snapshot=>{
+            v=snapshot.val();
             console.log(v)
-            for (x in v) {
-                console.log(x);
+            for (x in v){
+            console.log(x);
             }
             setDevLog(v);
         })
     }
 
     const context = {
-        fetchLoginHistory: fetchLoginHistoryHandler,
-        fetchDeviceLog: fetchDeviceLogHandler,
-        updateLoginHistory: updateLoginHistoryHandler,
-        loginHistory: loginH,
-        deviceLog: devLog
+        fetchLoginHistory:fetchLoginHistoryHandler,
+        fetchDeviceLog:fetchDeviceLogHandler,
+        updateLoginHistory:updateLoginHistoryHandler,
+        loginHistory:loginH,
+        deviceLog:devLog
     }
     return (
         <DatabaseContext.Provider
-            value={context}>
+            value={context}
+        >
             {children}
         </DatabaseContext.Provider>
     );

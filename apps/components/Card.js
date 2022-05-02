@@ -45,6 +45,7 @@ function ControllerCard(props) {
             onPressIn={handlePressIn}
             onPressOut={handlePressOut}
             onPress={handlePress}
+            disabled={props.disabled === null ? false : props.disabled}
         >
             <View style={styles.outerBtn}>
                 <LinearGradient
