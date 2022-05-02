@@ -48,6 +48,8 @@ export default function Login() {
                     setWarningText('Bạn nhập sai định dạng email!');
                 } else if (err == 'bad-identity') {
                     setWarningText('Email hoặc mật khẩu của bạn không hợp lệ!');
+                } else if (err == 'network-issue') {
+                    setWarningText('Kết nối mạng không ổn định! Vui lòng kiểm tra lại.');
                 } else if (err == 'unhandled-exception') {
                     setWarningText('Lỗi chưa được xử lý! Hãy liên hệ nhà phát hành ứng dụng để xử lý lỗi này.');
                 }

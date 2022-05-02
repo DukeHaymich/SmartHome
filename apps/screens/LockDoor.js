@@ -20,6 +20,7 @@ export default function LockDoor() {
         title: 'Đang tải...',
         isOn: null,
     });
+    const [tryTime,setTryTime] = useState(0);
 
     const onDoorLockTopic = message => {
         if (message == 1) {
@@ -37,11 +38,25 @@ export default function LockDoor() {
     };
 
     useEffect(() => {
-        if (MqttService && MqttService.isConnected) {
-            MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
-            MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate/get', 'duke_n_co');
+        try {
+            if (MqttService && MqttService.isConnected) {
+                MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
+                MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate/get', 'duke_n_co');
+            }
+            else throw new Error("Not connected");
+        } catch (error) {
+            setTimeout(()=> {
+               setTryTime((prev)=>Math.min(prev+1,5))
+            }, 5000);
+            if (tryTime == 5) {
+                setStatus({
+                    ...status,
+                    title: 'Không có kết nối!',
+                });
+            }
+            console.log(tryTime);
         }
-    }, []);
+    }, [tryTime]);
     const iconHomeLock = ['home-lock-open', 'home-lock'];
     const colorList = [colors.neonRed, colors.neonGreen];
     const handlePress = () => {

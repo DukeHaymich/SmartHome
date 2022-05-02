@@ -67,11 +67,11 @@ class MqttService {
         console.info(errorMessage);
         this.isConnected=false;
         Alert.alert(
-            'Failed!',
-            'Could not connect to MQTT',
+            'Thất bại!',
+            'Không thể kết nối đến server!',
             [{
-                text: 'TRY AGAIN',
-                onPress: () => this.connectClient(this.username, this.password, this.onSuccessHandler, this.onConnectionLostHandler)
+                text: 'Thử lại',
+                onPress: () => this.connect(this.onSuccessHandler, this.onConnectionLostHandler)
             }],
             { cancelable: false }
         );

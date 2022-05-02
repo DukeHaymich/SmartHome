@@ -41,7 +41,7 @@ function Controller(props) {
     )
 }
 
-export default function Activity() {
+export default function Account() {
     const { logout, theme } = useContext(AuthContext);
     const screen = useWindowDimensions();
     const avatar = require('../assets/images/Avatar.jpg')

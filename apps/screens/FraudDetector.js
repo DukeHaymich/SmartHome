@@ -22,8 +22,8 @@ export default function FraudDetector() {
 
     const [status, setStatus] = useState({
         title: 'Đang tải...',
-        isAuto: 0,
-        isOff: 0,
+        isAuto: null,
+        isOff: null,
     });
     const colorList = [colors.neonGreen, colors.neonRed];
     
@@ -97,7 +97,7 @@ export default function FraudDetector() {
                     // disabled = {isDisabled}
                     icon={status.isAuto ? 'hand-paper': 'cogs'}
                     title={status.isAuto ? 'Thủ công' : 'Tự động'}
-                    style={{color: '#fff',fontWeight: '900'}}
+                    style={{color: '#fff', fontWeight: '900'}}
                 />
                 <ControllerCard
                     gradColor={status.isAuto ? gradColorDisabled : (status.isOff ? gradColorOn : gradColorOff ) }
@@ -131,6 +131,7 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         borderRadius: 10000,
         borderWidth: 15,
+        borderColor: 'black',
         backgroundColor: colors.controlBackground,
         shadowOpacity: 0.48,
         shadowRadius: 11.95,
@@ -143,6 +144,7 @@ const styles = StyleSheet.create({
     statusText: {
         fontSize: 36,
         fontWeight: '700',
+        color: 'black',
     },
     controlContainer: {
         flex: 2,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useReducer } from 'react';
 import {
+    Alert,
     FlatList,
     SafeAreaView,
     StyleSheet,
@@ -149,9 +150,19 @@ export default function Dashboard({ navigation }) {
         MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfirebuzzer/get', 'duke_n_co');
     };
 
-    const mqttConnectionLostHandler = () => { };
+    const mqttConnectionLostHandler = () => {
+        Alert.alert(
+            'Lỗi!',
+            'Mất kết nối đến server!',
+            [{
+                text: 'Thử lại',
+                onPress: connect
+            }],
+            { cancelable: false }
+        );
+    };
 
-    useEffect(() => {
+    const connect = () => {
         try {
             if (MqttService && MqttService.isConnected) {
                 MqttService.disconnect();
@@ -160,9 +171,11 @@ export default function Dashboard({ navigation }) {
                 MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler);
             }
         } catch (e) {
-            console.log(e)
+            console.log(e);
         }
-    }, []);
+    }
+
+    useEffect(connect, []);
     const [openTool, setOpenTool] = useState(false);
     return (
         <SafeAreaView style={styles.container}>
@@ -263,7 +276,7 @@ export default function Dashboard({ navigation }) {
                     data={Object.values(devices)}
                     renderItem={({ item }) => (
                         <ControllerCard
-                            gradColor={[ '#aee1f9','#f6ebe6']}
+                            gradColor={['#f6ebe6', '#aee1f9']}
                             onPress={() => navigation.navigate(item.title)}
                             {...item}
                         />

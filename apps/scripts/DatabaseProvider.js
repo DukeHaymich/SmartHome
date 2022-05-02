@@ -29,44 +29,45 @@ export default function DatabaseProvider({children}) {
     }
 
     const updateLoginHistoryHandler = (userId) => {
-      if (!userId) return;
-      publicIP()
+        if (!userId) return;
+        publicIP()
         .then(ip => {
-          fetch('https://ipinfo.io/'+ip+'?token=c3e8fe3ca36e9e').then(response => response.json())
-          .then(data=>{
-            db.ref('/users/'+userId+'/loginLog').update(
-              { [ip.split('.').join(',')]: 
-                { 
-                  time :Date.now(), 
-                  location : data.city
+            fetch('https://ipinfo.io/'+ip+'?token=c3e8fe3ca36e9e').then(response => response.json())
+            .then(data=>{
+                db.ref('/users/'+userId+'/loginLog').update(
+                { [ip.split('.').join(',')]: 
+                    { 
+                    time :Date.now(), 
+                    location : data.city
+                    }
                 }
-              }
-              ).then(() => {
-                console.log('loginLog updated');
+                ).then(() => {
+                    console.log('loginLog updated');
+                })
             })
-          })
-          .catch(error => {
-            console.log(error);
-          });
+            .catch(error => {
+                console.log(error);
+            });
         })
 
-        fetchLoginHistoryHandler(userId);
+        // fetchLoginHistoryHandler(userId);
+        // addDeviceLogHandler("Fan",{status:"ON",time:Date.now()})
+        // fetchDeviceLogHandler();
     }
     
-    const fetchDeviceLogHandler = (userId)=>{
-      if (!userId) return;
-      db.ref('/users/'+userId+'/devLog').once('value',snapshot=>{
+    const fetchDeviceLogHandler = ()=>{
+        db.ref('/devices').once('value',snapshot=>{
             v=snapshot.val();
+            console.log(v);
             setDevLog(v);
         })
     }
 
-    const addDeviceLogHandler = (userId,device,log)=>{
-      if (!userId) return;
-      const newReference =db.ref('/users/'+userId+'/devLog').push();
-      newReference.set({
-        [device]:log
-      }).then('deviceLog updated');
+    const addDeviceLogHandler = (device,log)=>{
+        const newReference =db.ref('/devices').push();
+        newReference.set({
+            [device]:log
+        }).then(()=>console.log('deviceLog updated'));
     }
 
 

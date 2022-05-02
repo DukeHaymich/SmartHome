@@ -3,8 +3,8 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import DashboardStack from '../routes/DashboardStack';
-import Activity from '../screens/Activity';
-import Account from '../screens/Account';
+import ActivityStack from '../routes/ActivityStack';
+import AccountStack from '../routes/AccountStack';
 import CustomDrawer from '../components/CustomDrawer';
 import Header from '../components/Header';
 
@@ -25,29 +25,26 @@ export default function Drawer() {
             <drawer.Screen
                 name='Trang nhà'
                 component={DashboardStack}
-                options={({ navigation }) => {
+                options={() => {
                     return {
                         drawerIcon: ({color}) => (<MaterialIcons name = 'home' size={25} color= {color}/>),
-                        headerShown: false
+                        headerShown: false,
                     }
                 }}
                 />
             <drawer.Screen
                 name='Nhật ký hoạt động'
-                component={Activity}
-                options={ ({ navigation }) => {
+                component={ActivityStack}
+                options={ () => {
                     return {
                         drawerIcon: ({color}) => (<MaterialIcons name = 'history' size={25} color= {color}/>),
-                        header: () => <Header
-                            navigation={navigation}
-                            title='Nhật ký hoạt động'
-                        />,
+                        headerShown: false,
                     }
                 }}
                 />
             <drawer.Screen
                 name='Tài khoản'
-                component={Account}
+                component={AccountStack}
                 options={ ({ navigation }) => {
                     return {
                         drawerIcon: ({color}) => (<MaterialIcons name = 'person' size={25} color= {color}/>),
