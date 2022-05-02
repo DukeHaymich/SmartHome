@@ -1,85 +1,79 @@
 import React, { useEffect, useState, useReducer } from 'react';
 import {
-    Button,
     FlatList,
     SafeAreaView,
     StyleSheet,
     Text,
-    TouchableOpacity,
-    // TouchableHighlight,
     View,
     useWindowDimensions,
-    TouchableWithoutFeedback
 } from 'react-native';
-import {
-    LineChart
-} from "react-native-chart-kit";
-
+import { LineChart } from 'react-native-chart-kit';
 import Tooltip from 'react-native-walkthrough-tooltip';
-import MqttService from '../core/services/MqttService';
 
+
+import MqttService from '../core/services/MqttService';
 import { NumericCard, ControllerCard } from '../components/Card';
 import { colors } from '../scripts/colors';
-// import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
-
-
-export default function Dashboard({navigation}) {
+export default function Dashboard({ navigation }) {
     const screen = useWindowDimensions();
-    const [ today, setToday ] = useState(new Date());
-    const [sectorColor, setSectorColor] = useState("rgba(0, 0, 0, 1)");
+    const [today, setToday] = useState(new Date());
+    const [sectorColor, setSectorColor] = useState('rgba(0, 0, 0, 1)');
     const [checkData, setCheckData] = useState(false);
-    const [ numericData, numericDataDispatch ] = useReducer((state, action) => {
-        switch(action.type) {
-            case 'TEMPERATURE':{
-                var newState = JSON.parse(JSON.stringify(state));
-                try {
-                    var data = parseInt(action.data)
-                    newState.temperature.data = data;
-                } catch (e) {
-                    console.warn(e)
-                } finally {
+    const [numericData, numericDataDispatch] = useReducer((state, action) => {
+        try {
+            switch (action.type) {
+                case 'TEMPERATURE': {
+                    var newState = JSON.parse(JSON.stringify(state));
+                    try {
+                        newState.temperature.data = parseInt(action.data);
+                    } catch (e) {
+                        console.warn(e)
+                    } finally {
+                        return newState;
+                    }
+                }
+                case 'HUMIDITY': {
+                    var newState = JSON.parse(JSON.stringify(state));
+                    newState.humidity.data = Math.round(parseInt(action.data));
                     return newState;
                 }
+                default: {
+                    return state;
+                }
             }
-            case 'HUMIDITY': {
-                var newState = JSON.parse(JSON.stringify(state));
-                newState.humidity.data = action.data;
-                return newState;
-            }
-            default: {
-                return state;
-            }
+        } catch (e) {
+            return state;
         }
     },
-    {
-        temperature: {
-            id: 0,
-            title: 'Nhiệt độ',
-            data: '__',
-            unit: '°C'
-        },
-        humidity: {
-            id: 1,
-            title: 'Độ ẩm',
-            data: '__',
-            unit: '%'
-        },
-    })
-    const [ gas, setGas ] = useReducer((state, action) => {
-        switch(action.type) {
+        {
+            temperature: {
+                id: 0,
+                title: 'Nhiệt độ',
+                data: '__',
+                unit: '°C',
+            },
+            humidity: {
+                id: 1,
+                title: 'Độ ẩm',
+                data: '__',
+                unit: '%',
+            },
+        });
+    const [gas, setGas] = useReducer((state, action) => {
+        switch (action.type) {
             case 'GAS': {
                 var newState = JSON.parse(JSON.stringify(state));
                 var data = action.data;
                 setToday(new Date());
                 var time = today.toLocaleTimeString();
-                data = Math.round((data/1023*100 + Number.EPSILON));
-                if (newState.data.length >= 5){
+                data = Math.round((data / 1023) * 100 + Number.EPSILON);
+                if (newState.data.length >= 5) {
                     newState.data.shift();
                     newState.time.shift();
                 }
                 newState.data = [...newState.data, data];
-                
+
                 newState.time = [...newState.time, time];
                 return newState;
             }
@@ -87,45 +81,28 @@ export default function Dashboard({navigation}) {
                 return state;
             }
         }
-    }, {
-        title: 'Nồng độ khí ga',
-        data: [0],
-        time: [today.toLocaleTimeString()],
-        unit: '%'
-    })
-    useEffect(()=>{
+    },
+        {
+            title: 'Nồng độ khí ga',
+            data: [0],
+            time: [today.toLocaleTimeString()],
+            unit: '%',
+        });
+    useEffect(() => {
         var set = new Set(gas.data);
-        if (set.size === 1){
+        if (set.size === 1) {
             setCheckData(true);
-        }
-        else{
+        } else {
             setCheckData(false);
         }
-        if (gas.data[gas.data.length-1] >= 40){
+        if (gas.data[gas.data.length - 1] >= 40) {
             setSectorColor('rgba(255, 0, 0, 1)');
-        }
-        else{
+        } else {
             setSectorColor('rgba(0, 0, 0, 1)');
         }
-    },[gas])
+    }, [gas]);
 
-    const [ devices, setDevices ] = useReducer((state, action) => {
-        switch(action.type) {
-            case 'DOOR-LOCK': {
-                
-            }
-            case 'FRAUD-DETECTOR': {
-
-            }
-            case 'FIRE-ALARM': {
-
-            }
-            default: {
-                return state;
-            }
-        }
-    },
-    {
+    const devices = {
         doorLock: {
             id: 0,
             title: 'Khóa cửa',
@@ -136,101 +113,81 @@ export default function Dashboard({navigation}) {
             title: 'Chống trộm',
             icon: 'user-shield',
         },
-    })
+    };
 
     const onGasTopic = message => {
         setGas({
             type: 'GAS',
-            data: message
-        })
-    }
+            data: message,
+        });
+    };
     const onTemperatureTopic = message => {
         numericDataDispatch({
             type: 'TEMPERATURE',
             data: message,
         });
-    }
+    };
     const onHumidityTopic = message => {
         numericDataDispatch({
             type: 'HUMIDITY',
             data: message,
         });
-    }
-    const onFraudDetectTopic = message => {
+    };
+    const onFraudDetectTopic = message => { };
+    const onFireDetectTopic = message => { };
+    const onFireAlarmTopic = message => { };
 
-    }
-    const onFireDetectTopic = message => {
-
-    }
-    const onDoorLockTopic = message => {
-
-    }
-    const onFraudAlarmTopic = message => {
-
-    }
-    const onFireAlarmTopic = message => {
-        
-    }
-    
     const mqttSuccessHandler = () => {
         MqttService.subscribe('duke_and_co/feeds/visual-igas', onGasTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-ftemp', onTemperatureTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-ihumid', onHumidityTopic);
-        MqttService.subscribe('duke_and_co/feeds/visual-bwarningfraud', onFraudDetectTopic);
+        MqttService.subscribe('duke_and_co/feeds/visual-bwarningfraud', onFraudDetectTopic,);
         MqttService.subscribe('duke_and_co/feeds/visual-bwarningfire', onFireDetectTopic);
-        MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
-        MqttService.subscribe('duke_and_co/feeds/action-bnotifyfraudbuzzer', onFraudAlarmTopic);
         MqttService.subscribe('duke_and_co/feeds/action-bnotifyfirebuzzer', onFireAlarmTopic);
         // Get latest value
         MqttService.publishMessage('duke_and_co/feeds/visual-igas/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/visual-ftemp/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/visual-ihumid/get', 'duke_n_co');
-        MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfraudbuzzer/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfirebuzzer/get', 'duke_n_co');
     };
-    
-    const mqttConnectionLostHandler = () => {
-        
-    };
-    
+
+    const mqttConnectionLostHandler = () => { };
+
     useEffect(() => {
         if (MqttService && MqttService.isConnected) {
             MqttService.disconnect();
         }
         if (MqttService && !MqttService.isConnected) {
-            MqttService.connect(
-                mqttSuccessHandler,
-                mqttConnectionLostHandler
-            );
+            MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler);
         }
     }, []);
     const [openTool, setOpenTool] = useState(false);
     return (
         <SafeAreaView style={styles.container}>
-            <View style = {{marginVertical: 5, marginHorizontal:10}}> 
-                <Text style = {[styles.headerText,{opacity: 0.5}]}>Xin chào!</Text>
-                <Text style = {[styles.headerText,{fontWeight: '700', fontSize: 23}]}>Sơn Đại Gia</Text>
-            </View> 
-            
+            <View style={{ marginVertical: 5, marginHorizontal: 10 }}>
+                <Text style={[styles.headerText, { opacity: 0.5 }]}>Xin chào!</Text>
+                <Text style={[styles.headerText, { fontWeight: '700', fontSize: 23 }]}>
+                    Sơn Đại Gia
+                </Text>
+            </View>
+
             <View style={styles.visualNumericData}>
                 <FlatList
                     data={Object.values(numericData)}
                     horizontal={true}
                     keyExtractor={item => item.id}
-                    renderItem={({item}) => <NumericCard screen={screen} {...item}/>}
+                    renderItem={({ item }) => <NumericCard {...item} />}
                 />
             </View>
-            {/* <View styles={styles.graph}>
-                <FlatList
-                    data={devices}
-                    renderItem={({item}) => <ControllerCard screen={screen} {...item}/>}
-                    keyExtractor={item => item.id}
-                    contentContainerStyle={{ paddingBottom: 17 }}
-                />
-            </View> */}
             <View style={styles.graph}>
-                <Text style = {[styles.headerText,{alignSelf: 'center', fontSize: 28, color: colors.BKLightBlue}]}>Nồng độ khí gas</Text>
+                <Text
+                    style={[
+                        styles.headerText,
+                        { alignSelf: 'center', fontSize: 28, color: colors.BKLightBlue },
+                    ]}>
+                    Nồng độ khí gas
+                </Text>
                 <LineChart
                     // onDataPointClick={({value, getColor}) => {
                     //     setOpenTool(true);
@@ -239,9 +196,9 @@ export default function Dashboard({navigation}) {
                         labels: gas.time,
                         datasets: [
                             {
-                                data: gas.data
-                            }
-                        ]
+                                data: gas.data,
+                            },
+                        ],
                     }}
                     width={screen.width * 0.9} // from react-native
                     height={220}
@@ -259,25 +216,23 @@ export default function Dashboard({navigation}) {
                             borderRadius: 16,
                         },
                         propsForDots: {
-                            r: "6",
-                            strokeWidth: "2",
-                            stroke: colors.white
+                            r: '6',
+                            strokeWidth: '2',
+                            stroke: colors.white,
                         },
-                        propsForLabels:{
+                        propsForLabels: {
                             fontSize: 22,
-                            fontFamily: "Digital-7"
+                            fontFamily: 'Digital-7',
                         },
-                        propsForVerticalLabels:{
+                        propsForVerticalLabels: {
                             fontSize: 18,
-                        }
-                        
+                        },
                     }}
-                    getDotColor={(dataPoint) => {
+                    getDotColor={dataPoint => {
                         if (dataPoint >= 40) {
                             return 'red';
-                        }
-                        else {
-                            return 'black'
+                        } else {
+                            return 'black';
                         }
                     }}
                     // renderDotContent={(x,y,index,indexData) => {
@@ -293,8 +248,8 @@ export default function Dashboard({navigation}) {
                     //         </Tooltip>
                     //     )
                     // }}
-                    segments = {3}
-                    fromZero = {checkData}
+                    segments={3}
+                    fromZero={checkData}
                     style={{
                         marginVertical: 8,
                         borderRadius: 16,
@@ -305,10 +260,16 @@ export default function Dashboard({navigation}) {
             <View style={styles.controller}>
                 <FlatList
                     data={Object.values(devices)}
-                    renderItem={({item}) => <ControllerCard screen={screen} navigation = {navigation} {...item}/>}
+                    renderItem={({ item }) => (
+                        <ControllerCard
+                            gradColor={['#f6ebe6', '#aee1f9']}
+                            onPress={() => navigation.navigate(item.title)}
+                            {...item}
+                        />
+                    )}
                     keyExtractor={item => item.id}
-                    key = {2}
-                    numColumns = {2}
+                    key={2}
+                    numColumns={2}
                 />
             </View>
         </SafeAreaView>
@@ -339,6 +300,6 @@ const styles = StyleSheet.create({
     headerText: {
         fontFamily: 'Nunito-Medium',
         fontSize: 18,
-        marginLeft: 10
+        marginLeft: 10,
     },
 });

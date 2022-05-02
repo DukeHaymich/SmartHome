@@ -9,27 +9,28 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { colors } from "../scripts/colors";
 
 
-export default function Header({navigation, title, isHome}) {
+export default function Header({ navigation, title, isHome }) {
     return (
-        <View style={styles.container}>
-            {
-                isHome?
-                <MaterialIcons
-                    name='menu'
-                    size={35}
-                    style={styles.leftButton}
-                    onPress={() => navigation.openDrawer()}
-                />
-                :
-                <MaterialIcons
-                    name='arrow-back-ios'
-                    size={35}
-                    style={styles.leftButton}
-                    onPress={() => navigation.goBack()}
-                />
-
-            }
-            <Text style={styles.text}>
+        <View style={[
+            styles.container,
+            (isHome ? {} : {
+                backgroundColor: colors.controlBackground,
+            })
+        ]}
+        >
+            <MaterialIcons
+                name={isHome ? 'menu' : 'arrow-back-ios'}
+                size={35}
+                style={[
+                    styles.leftButton,
+                    (isHome ? {} : { color: colors.white })
+                ]}
+                onPress={() => isHome ? navigation.openDrawer() : navigation.goBack()}
+            />
+            <Text style={[
+                styles.text,
+                (isHome ? {} : { color: colors.white })
+            ]}>
                 {title}
             </Text>
             {/* Right button */}
