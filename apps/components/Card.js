@@ -16,7 +16,10 @@ function NumericCard(props) {
     return (
         <View style={[
             styles.container,
-            { width: 0.5 * screen.width }
+            {
+                width: 0.5 * screen.width,
+                // height: Math.min(0.175 * screen.height, 200),
+            }
         ]}>
             <View style={styles.headerNumeric}>
                 <Text style={styles.headerText}>{props.title}</Text>
@@ -29,7 +32,7 @@ function NumericCard(props) {
     )
 }
 
-function ControllerCard({style, ...props}) {
+function ControllerCard({ style, ...props }) {
     const [isPressed, setPressed] = useState(false);
     const handlePressIn = useCallback(() => {
         setPressed(true);
@@ -52,7 +55,7 @@ function ControllerCard({style, ...props}) {
                     colors={gradColor}
                     style={styles.btn}
                     useAngle={true}
-                    angle={145}
+                    angle={180}
                     angleCenter={{ x: 0.5, y: 0.5 }}
                 >
                     <FontAwesome5
@@ -75,7 +78,7 @@ const styles = StyleSheet.create({
 
     },
     headerNumeric: {
-        height: 42,
+        // height: 42,
         // backgroundColor: 'red'
     },
     headerText: {
@@ -92,17 +95,20 @@ const styles = StyleSheet.create({
         color: colors.BKLightBlue,
         fontFamily: 'Digital-7-Mono',
         textAlignVertical: 'bottom',
+        paddingTop: 10,
     },
     unit: {
         flex: 1,
         textAlign: 'left',
         marginLeft: 15,
-        marginBottom: 4,
+        marginTop: 22,
+        alignSelf: 'flex-start',
         fontSize: 64,
     },
     data: {
         flex: 2,
         textAlign: 'right',
+        alignSelf: 'flex-start',
         fontSize: 96,
     },
     numeric: {
@@ -136,7 +142,9 @@ const styles = StyleSheet.create({
         shadowColor: 'black',
         aspectRatio: 1,
         margin: 20,
-        elevation: 10
+        elevation: 10,
+        // alignItems: 'center',
+        // justifyContent: 'center'
     },
 });
 
