@@ -9,19 +9,21 @@ import DatabaseProvider from './apps/scripts/DatabaseProvider'
 
 
 LogBox.ignoreLogs([
-  "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
+    "[react-native-gesture-handler] Seems like you\'re using an old API with gesture components, check out new Gestures system!",
 ]);
 
 
 export default function App() {
-    setCustomText({style: {
-        fontSize: 16,
-        fontFamily: 'Roboto',
-        color: '#000',
-    }});
+    setCustomText({
+        style: {
+            fontSize: 16,
+            fontFamily: 'Roboto',
+            color: '#000',
+        }
+    });
 
-    const [ isLoading, setIsLoading ] = useState(true);
-    
+    const [isLoading, setIsLoading] = useState(true);
+
     useEffect(() => {
         setTimeout(() => {
             setIsLoading(false);
@@ -30,15 +32,15 @@ export default function App() {
 
     if (isLoading) {
         return (
-            <Splash/>
+            <Splash />
         )
     }
 
     return (
         <AuthProvider>
-        <DatabaseProvider>
-            <Routes/>
-        </DatabaseProvider>
+            <DatabaseProvider>
+                <Routes />
+            </DatabaseProvider>
         </AuthProvider>
     );
 }

@@ -13,11 +13,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { colors } from '../scripts/colors';
 
 
-function LogOption(props) {
+function LogOption({ navigation, ...props }) {
     return (
         <TouchableOpacity
             style={styles.optionContainer}
-            onPress={props.onPress}
+            onPress={() => { navigation.navigate(props.title) }}
             activeOpacity={0.5}
         >
             <MaterialCommunityIcons
@@ -38,16 +38,16 @@ function LogOption(props) {
     )
 }
 
-export default function Activity() {
+export default function Activity({ navigation }) {
     const options = {
         login: {
-            onPress: () => {},
+            title: 'Nhật ký đăng nhập',
             icon: 'key',
             heading: 'Hoạt động đăng nhập',
             info: 'Xem lại lịch sử đăng nhập tài khoản ở các thiết bị của bạn.',
         },
         device: {
-            onPress: () => {},
+            title: 'Nhật ký thiết bị',
             icon: 'cellphone-information',
             heading: 'Hoạt động của thiết bị',
             info: 'Xem lịch sử hoạt động của các thiết bị IOT.',
@@ -68,7 +68,7 @@ export default function Activity() {
             <View style={styles.controlContainer}>
                 <FlatList
                     data={Object.values(options)}
-                    renderItem={({ item }) => <LogOption {...item}/>}
+                    renderItem={({ item }) => <LogOption navigation={navigation} {...item} />}
                 />
             </View>
         </SafeAreaView>

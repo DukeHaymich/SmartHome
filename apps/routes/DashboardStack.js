@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { createContext, useState } from 'react';
 
 import Dashboard from '../screens/Dashboard';
 import FraudDetector from '../screens/FraudDetector';
@@ -10,13 +10,13 @@ const stack = createNativeStackNavigator();
 export default function DashboardStack() {
     return (
         <stack.Navigator screenOptions={{
-            headerStyle: { backgroundColor: '#1e93ff'},
+            headerStyle: { backgroundColor: '#1e93ff' },
         }}>
             <stack.Screen
                 name='Dashboard'
                 component={Dashboard}
-                options={({navigation}) => {
-                    return{
+                options={({ navigation }) => {
+                    return {
                         header: () => <Header
                             navigation={navigation}
                             title='Trang nhà'
@@ -27,8 +27,8 @@ export default function DashboardStack() {
             <stack.Screen
                 name='Chống trộm'
                 component={FraudDetector}
-                options={({navigation}) => {
-                    return{
+                options={({ navigation }) => {
+                    return {
                         header: () => <Header
                             navigation={navigation}
                             title='Cài đặt chống trộm'
@@ -40,8 +40,8 @@ export default function DashboardStack() {
             <stack.Screen
                 name='Khóa cửa'
                 component={LockDoor}
-                options={({navigation}) => {
-                    return{
+                options={({ navigation }) => {
+                    return {
                         header: () => <Header
                             navigation={navigation}
                             title='Cài đặt khóa cửa'
@@ -51,6 +51,7 @@ export default function DashboardStack() {
                 }}
             />
         </stack.Navigator>
+        // </ControllerContext.Provider>
     )
-    
+
 }
