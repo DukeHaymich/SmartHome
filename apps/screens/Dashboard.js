@@ -276,7 +276,7 @@ export default function Dashboard({ navigation }) {
                     data={Object.values(devices)}
                     renderItem={({ item }) => (
                         <ControllerCard
-                            gradColor={['#f6ebe6', '#aee1f9']}
+                            gradColor={['#aee1f9','#f6ebe6']}
                             onPress={() => navigation.navigate(item.title)}
                             {...item}
                         />

@@ -81,6 +81,9 @@ export default function LockDoor() {
                 <ControllerCard
                     gradColor={[colors.controlBackground, colors.controlBackgroundLight]}
                     onPress={handlePress}
+                    icon = 'key'
+                    style = {{color: '#fff'}}
+                    // title = {}
                 />
             </View>
         </SafeAreaView>
