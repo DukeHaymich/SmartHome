@@ -172,11 +172,11 @@ export default function Dashboard({ navigation }) {
                         }}
                         getDotColor={dataPoint => {
                             if (dataPoint >= 40) {
-                                // setDotStroke('red');
+                                setDotStroke('red');
                                 return 'red';
 
                             } else {
-                                // setDotStroke('white');
+                                setDotStroke('white');
                                 return 'white';
                             }
                         }}

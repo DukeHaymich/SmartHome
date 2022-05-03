@@ -15,13 +15,14 @@ import { colors } from '../scripts/colors';
 function Log(props) {
     return (
         <View style={styles.item}>
-            <View styles={styles.icon}>
+            <View style ={styles.icon}>
                 <FontAwesome
                     name={props.os == 'Android' ? 'android' : 'apple'}
-                    size={36}
+                    size={70}
+                    color={props.os == 'Android' ? '#99cc33' : '#c4c4c4'}
                 />
             </View>
-            <View style={styles.itemText}>
+            <View style={props.index === (props.length - 1) ? styles.itemTextLastChild : styles.itemText}>
                 <Text style={styles.text}>Thời gian: {Date(props.time).toString()}</Text>
                 <Text style={styles.text}>Địa chỉ IP: {props.ip}</Text>
                 <Text style={styles.text}>Địa điểm: {props.location}</Text>
@@ -43,7 +44,7 @@ export default function LoginLog() {
             <FlatList
                 // [{ip:'144,123,222,131',location:...,time:...},....]
                 data={dbCtx.loginHistory}
-                renderItem={({ item }) => <Log {...item} />}
+                renderItem={({ item,index }) => <Log {...item} index = {index} length = {dbCtx.loginHistory.length}/>}
             />
         </SafeAreaView>
     )
@@ -55,19 +56,32 @@ const styles = StyleSheet.create({
 
     },
     item: {
-        padding: 20,
-        borderTopColor: '#c4c4c4',
-        borderTopWidth: 1.5,
-        flexDirection: 'row'
+        paddingTop: 10,
+        flexDirection: 'row',
+        // backgroundColor: 'green'
+    },
+    itemTextLastChild:{
+        flex: 4,
+        paddingBottom: 10,
+        // backgroundColor: 'blue'
     },
     itemText: {
-        flex: 3,
-        backgroundColor: 'blue'
+        flex: 4,
+        borderBottomColor: '#c4c4c4',
+        borderBottomWidth: 1,
+        paddingBottom: 10,
+        // paddingRight: ,
+        // backgroundColor: 'blue',
+        // padding: 5
     },
     icon: {
-        flex: 2,
-        // width: '100%',
-        backgroundColor: 'red'
+        flex: 1,
+        // backgroundColor: 'red',
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingBottom: 10
+        // padding: 5
+        // padding: 5
     },
     text: {
         fontSize: 18,
