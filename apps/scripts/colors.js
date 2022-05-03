@@ -16,7 +16,7 @@ export const colors = {
     blue: '#016BD9',
     yellow: '#f90',
     transparent: '#0000',
-    controlBackground: '#09a6d6',//'#04a2ba',
+    controlBackground: '#1E93FF',//'#04a2ba',
     controlBackgroundLight: '#6bb4ff',
     buttonOn: '#00ab11',
     buttonOnLight: '#76ff3d',

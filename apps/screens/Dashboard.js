@@ -9,16 +9,16 @@ import {
     useWindowDimensions,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
+import LinearGradient from 'react-native-linear-gradient';
 import Tooltip from 'react-native-walkthrough-tooltip';
 
 
-// import MqttService from '../core/services/MqttService';
 import { NumericCard, ControllerCard } from '../components/Card';
-import { colors } from '../scripts/colors';
-// import { ControllerContext } from '../routes/DashboardStack';
 import { MQTTContext } from '../scripts/MQTTProvider';
-import LinearGradient from 'react-native-linear-gradient';
+import { DatabaseContext } from '../scripts/DatabaseProvider';
+import { AuthContext } from '../scripts/AuthProvider';
 
+import { colors } from '../scripts/colors';
 
 export default function Dashboard({ navigation }) {
     const {
@@ -32,9 +32,25 @@ export default function Dashboard({ navigation }) {
         isConnected,
         disconnect,
     } = useContext(MQTTContext);
+    const dbCtx = useContext(DatabaseContext);
+    const authCtx = useContext(AuthContext);
     const screen = useWindowDimensions();
     const [sectorColor, setSectorColor] = useState('rgba(0, 0, 0, 1)');
     const [checkData, setCheckData] = useState(false);
+    const [tryFlag, setTryFlag] = useState(false);
+
+    const devices = [
+        {
+            id: 0,
+            title: 'Khóa cửa',
+            icon: ['door-open', 'door-closed'],
+        },
+        {
+            id: 1,
+            title: 'Chống trộm',
+            icon: 'user-shield',
+        },
+    ]
 
     useEffect(() => {
         var set = new Set(gas.data);
@@ -50,30 +66,32 @@ export default function Dashboard({ navigation }) {
         }
     }, [gas]);
 
-    const devices = [
-        {
-            id: 0,
-            title: 'Khóa cửa',
-            icon: ['door-open', 'door-closed'],
-        },
-        {
-            id: 1,
-            title: 'Chống trộm',
-            icon: 'user-shield',
-        },
-    ]
     useEffect(() => {
-        connect();
+        dbCtx.fetchMqttToken(
+            authCtx.user.token.uid,
+            connect
+        );
         return () => {
             disconnect();
         }
     }, []);
 
     useEffect(() => {
-        if (isConnected) {
-            fetchLatestData();
+        try {
+            if (isConnected) {
+                fetchLatestData();
+                return;
+            }
+            else {
+                throw new Error("Not connected");
+            }
+        } catch (error) {
+            setTimeout(() => {
+                setTryFlag((prev) => !prev)
+            }, 20000);
+            console.log(tryFlag);
         }
-    }, [isConnected]);
+    }, [tryFlag]);
     // const [openTool, setOpenTool] = useState(false);
     const [dotStroke, setDotStroke] = useState('white');
     const colorController = [colors.neonRed, '#00ab00'];
@@ -154,11 +172,11 @@ export default function Dashboard({ navigation }) {
                         }}
                         getDotColor={dataPoint => {
                             if (dataPoint >= 40) {
-                                setDotStroke('red');
+                                // setDotStroke('red');
                                 return 'red';
 
                             } else {
-                                setDotStroke('white');
+                                // setDotStroke('white');
                                 return 'white';
                             }
                         }}

@@ -6,7 +6,7 @@ import {
     View,
 } from 'react-native';
 import { FlatList } from 'react-native-gesture-handler';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { DatabaseContext } from '../scripts/DatabaseProvider';
 import { AuthContext } from '../scripts/AuthProvider';
 
@@ -15,7 +15,11 @@ import { colors } from '../scripts/colors';
 function Log(props) {
     return (
         <View style={styles.item}>
-            <View styles={styles.icon}><Text>haha</Text>
+            <View styles={styles.icon}>
+                <FontAwesome
+                    name={props.os == 'Android' ? 'android' : 'apple'}
+                    size={36}
+                />
             </View>
             <View style={styles.itemText}>
                 <Text style={styles.text}>Thời gian: {Date(props.time).toString()}</Text>

@@ -1,5 +1,5 @@
 import React, { createContext, useState } from 'react';
-import { Alert } from 'react-native';
+// import { Alert } from 'react-native';
 
 import MqttService from '../core/services/MqttService';
 
@@ -162,6 +162,7 @@ export default function MQTTProvider({ children }) {
         MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-bwarningfraud', onFraudAlarmTopic);
         MqttService.subscribe('duke_and_co/feeds/action-bnotifyfraudbuzzer', onFraudDetectorTopic);
+        fetchLatestData();
     };
 
     const publishDoorLock = (data) => {
@@ -172,27 +173,31 @@ export default function MQTTProvider({ children }) {
     }
 
     const mqttConnectionLostHandler = () => {
-        Alert.alert(
-            'Lỗi!',
-            'Mất kết nối đến server!',
-            [{
-                text: 'Thử lại',
-                onPress: () => { }
-            }],
-            { cancelable: true }
-        );
+        // Alert.alert(
+        //     'Lỗi!',
+        //     'Mất kết nối đến server!',
+        //     [{
+        //         text: 'Thử lại',
+        //         onPress: () => {
+        //             if (MqttService && !MqttService.isConnected) {
+        //                 MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler)
+        //             }
+        //         }
+        //     }],
+        //     { cancelable: true }
+        // );
     };
 
-    const connect = () => {
+    const connect = (username = null, password = null) => {
         if (MqttService && !MqttService.isConnected) {
-            MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler);
+            MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler, username, password);
             return;
         }
         if (MqttService && MqttService.isConnected) {
             MqttService.disconnect();
             setTimeout(() => {
                 if (MqttService && !MqttService.isConnected) {
-                    MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler);
+                    MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler, username, password);
                 }
             }, 5000);
             return;
@@ -213,7 +218,9 @@ export default function MQTTProvider({ children }) {
                 humidity: humidity,
                 gas: gas,
                 doorLock: doorLock,
+                setDoorLock: setDoorLock,
                 fraudDetector: fraudDetector,
+                setFraudDetector: setFraudDetector,
                 fraudWarning: fraudWarning,
                 publishDoorLock: publishDoorLock,
                 publishFraudDetector: publishFraudDetector,

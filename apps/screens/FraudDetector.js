@@ -19,10 +19,12 @@ export default function FraudDetector() {
 
     const {
         fraudDetector,
+        setFraudDetector,
         publishFraudDetector
     } = useContext(MQTTContext);
     const status = fraudDetector;
     const colorList = [colors.neonGreen, colors.neonRed];
+    const [tryTime, setTryTime] = useState(0);
 
 
     const toggleOnOff = () => {
@@ -31,6 +33,30 @@ export default function FraudDetector() {
     }
 
     const handleAuto = () => { }
+
+
+    useEffect(() => {
+        try {
+            if (isConnected) {
+                fetchLatestData();
+                return;
+            }
+            else {
+                throw new Error("Not connected");
+            }
+        } catch (error) {
+            setTimeout(() => {
+                setTryTime((prev) => Math.min(prev + 1, 5))
+            }, 5000);
+            if (tryTime == 5) {
+                setFraudDetector({
+                    ...fraudDetector,
+                    title: 'Không có kết nối!',
+                });
+            }
+            console.log(tryTime);
+        }
+    }, [tryTime]);
 
     return (
         <SafeAreaView style={styles.container}>

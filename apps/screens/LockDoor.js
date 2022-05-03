@@ -15,31 +15,36 @@ import { MQTTContext } from '../scripts/MQTTProvider';
 export default function LockDoor() {
     const {
         doorLock,
+        setDoorLock,
         publishDoorLock,
+        fetchLatestData,
+        isConnected,
     } = useContext(MQTTContext);
-    // const [tryTime, setTryTime] = useState(0);
+    const [tryTime, setTryTime] = useState(0);
     const status = doorLock;
 
-    // useEffect(() => {
-    //     try {
-    //         if (MqttService && MqttService.isConnected) {
-    //             MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
-    //             MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate/get', 'duke_n_co');
-    //         }
-    //         else throw new Error("Not connected");
-    //     } catch (error) {
-    //         setTimeout(() => {
-    //             setTryTime((prev) => Math.min(prev + 1, 5))
-    //         }, 5000);
-    //         if (tryTime == 5) {
-    //             setStatus({
-    //                 ...status,
-    //                 title: 'Không có kết nối!',
-    //             });
-    //         }
-    //         console.log(tryTime);
-    //     }
-    // }, [tryTime]);
+    useEffect(() => {
+        try {
+            if (isConnected) {
+                fetchLatestData();
+                return;
+            }
+            else {
+                throw new Error("Not connected");
+            }
+        } catch (error) {
+            setTimeout(() => {
+                setTryTime((prev) => Math.min(prev + 1, 5))
+            }, 5000);
+            if (tryTime == 5) {
+                setDoorLock({
+                    ...doorLock,
+                    title: 'Không có kết nối!',
+                });
+            }
+            console.log(tryTime);
+        }
+    }, [tryTime]);
     const iconHomeLock = ['home-lock-open', 'home-lock'];
     const colorList = [colors.neonRed, colors.neonGreen];
     const gradColorOn = [colors.buttonOn, colors.buttonOnLight];

@@ -22,33 +22,35 @@ class MqttService {
             clientId
         );
         this.username = 'duke_and_co',
-        this.password = 'aio_FBlS171kI4CuXJbYPzIX2a32wzMW'
+            this.password = 'aio_FBlS171kI4CuXJbYPzIX2a32wzMW'
         this.client.onMessageArrived = this.onMessageArrived;
         this.callbacks = {};
         this.onSuccessHandler = undefined;
         this.onConnectionLostHandler = undefined;
         this.isConnected = false;
-    }   
+    }
 
-    connect = (onSuccessHandler, onConnectionLostHandler) => {
+    connect = (onSuccessHandler, onConnectionLostHandler, username = null, password = null) => {
         this.onSuccessHandler = onSuccessHandler;
         this.onConnectionLostHandler = onConnectionLostHandler;
         this.client.onConnectionLost = () => {
             this.isConnected = false;
             onConnectionLostHandler();
         };
+        this.username = username ?? this.username;
+        this.password = password ?? this.password;
 
         this.client.connect({
-            timeout:10,
+            timeout: 10,
             onSuccess: () => {
                 this.isConnected = true;
                 onSuccessHandler();
             },
-            useSSL:true,
-            onFailure:this.onFailure,
-            reconnect:true,
-            keepAliveInterval:20,
-            cleanSession:true,
+            useSSL: true,
+            onFailure: this.onFailure,
+            reconnect: true,
+            keepAliveInterval: 20,
+            cleanSession: true,
             userName: this.username,
             password: this.password
         });
@@ -65,7 +67,7 @@ class MqttService {
 
     onFailure = ({ errorMessage }) => {
         console.info(errorMessage);
-        this.isConnected=false;
+        this.isConnected = false;
         Alert.alert(
             'Thất bại!',
             'Không thể kết nối đến server!',

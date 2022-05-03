@@ -46,10 +46,10 @@ export default function AuthProvider({ children }) {
                 },
                 logout: async () => {
                     try {
-                        await auth().signOut();
                         if (MqttService && MqttService.isConnected) {
-                            MqttService.disconnect();
+                            await MqttService.disconnect();
                         }
+                        await auth().signOut();
                     } catch (e) {
                         console.log(e);
                     }
