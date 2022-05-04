@@ -1,11 +1,12 @@
-import React, { useContext, useReducer, useEffect } from 'react';
+import React, { useContext, useState, useReducer, useEffect } from 'react';
 import {
     SafeAreaView,
     StyleSheet,
     Text,
     View,
+    FlatList,
+    SectionList
 } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { DatabaseContext } from '../scripts/DatabaseProvider';
 import { AuthContext } from '../scripts/AuthProvider';
@@ -38,17 +39,25 @@ function Log(props) {
 export default function LoginLog() {
     const dbCtx = useContext(DatabaseContext);
     const authCtx = useContext(AuthContext);
-    useEffect(
-        () => dbCtx.fetchLoginHistory(authCtx.user.token.uid)
-        , []
-    )
+    const [isRefreshing, setIsRefreshing] = useState(true);
+    useEffect(()=>{
+        return ()=>{
+            dbCtx.setLoginHistory([]);
+        }
+    }, [])
+    useEffect(()=>{
+        if (isRefreshing) dbCtx.fetchLoginHistory(authCtx.user.token.uid,()=>{setIsRefreshing(false);});
+    },[isRefreshing]);
     return (
         <SafeAreaView style={styles.screen}>
-            <Text style={styles.heading}>Danh sách thiết bị</Text>
-            <FlatList
-                // [{ip:'144,123,222,131',location:...,time:...},....]
-                data={dbCtx.loginHistory}
-                renderItem={({ item, index }) => <Log {...item} index={index} length={dbCtx.loginHistory.length} />}
+            <SectionList
+                sections={[{title:"Danh sách thiết bị",data:dbCtx.loginHistory}]}
+                renderItem={({ item, index }) => <Log {...item} index={index} />}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text style={styles.heading}>{title}</Text>
+                  )}
+                onRefresh={()=>setIsRefreshing(true)}
+                refreshing={isRefreshing}
             />
         </SafeAreaView>
     )

@@ -2,6 +2,7 @@ import React, { createContext, useState } from 'react';
 import { firebase } from '@react-native-firebase/database';
 import publicIP from 'react-native-public-ip';
 import DeviceInfo from 'react-native-device-info';
+import { max } from 'react-native-reanimated';
 
 export const DatabaseContext = createContext(
     {
@@ -13,7 +14,7 @@ export const DatabaseContext = createContext(
         loginHistory: [],
         deviceLog: [],
         setDeviceLog: () => { },
-        setDevLogEnd: () => { },
+        setLoginHistory: ()=>{},
         mqttToken: {
             username: '',
             password: ''
@@ -25,12 +26,11 @@ const db = firebase.app().database('https://bk-smart-home-default-rtdb.firebasei
 export default function DatabaseProvider({ children }) {
     const [loginH, setLoginH] = useState([]);
     const [devLog, setDevLog] = useState([]);
-    const [devLogEnd, setDevLogEnd] = useState(false);
     const [mqttToken, setMqttToken] = useState({ username: "", password: "" });
 
-    const fetchLoginHistoryHandler = (userId) => {
-        if (!userId) return;
+    const fetchLoginHistoryHandler = (userId,fun=null) => {
         db.ref('/users/' + userId + '/loginLog').once('value', snapshot => {
+            if (fun!=null) fun();
             const o = snapshot.val();
             if (!o) return;
             const l = Object.keys(o).map(key => {
@@ -69,17 +69,16 @@ export default function DatabaseProvider({ children }) {
         new Promise(() => updateLoginHistoryAsync(userId));
     }
 
-    const fetchDeviceLogHandler = () => {
-        if (devLogEnd) return;
+    const fetchDeviceLogHandler = (addMore=15,fun=null) => {
         const oldLength = devLog.length;
         const ndevLog = [];
-        db.ref('/devices').limitToLast(oldLength + 15).once('value', s => {
+        db.ref('/devices').limitToLast(Math.max(15,oldLength+addMore)).once('value', s => {
             s.forEach((snapshot) => {
                 ndevLog.push(snapshot.val());
             })
         }).then(() => {
+            if (fun!=null)fun();
             if (ndevLog.length == oldLength) {
-                setDevLogEnd(true);
                 return;
             }
             ndevLog.reverse();
@@ -110,7 +109,7 @@ export default function DatabaseProvider({ children }) {
         loginHistory: loginH,
         deviceLog: devLog,
         setDeviceLog: setDevLog,
-        setDevLogEnd: setDevLogEnd,
+        setLoginHistory: setLoginH,
         mqttToken: mqttToken
     }
     return (

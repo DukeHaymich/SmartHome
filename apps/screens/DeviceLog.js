@@ -1,6 +1,5 @@
-import React, { useState, useContext, useReducer, useEffect } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import {
-    FlatList,
     SafeAreaView,
     StyleSheet,
     Text,
@@ -10,8 +9,8 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { DatabaseContext } from '../scripts/DatabaseProvider';
-import { AuthContext } from '../scripts/AuthProvider';
 import { colors } from '../scripts/colors';
+import { set } from 'react-native-reanimated';
 
 function Log(props) {
     var time = new Date(props.time);
@@ -34,48 +33,54 @@ function Log(props) {
     );
 }
 
-function SessionList(props) {
-    return <FlatList
-        data={props.data}
-        renderItem={({ item, index }) => <Log {...item} index={index} length={props.data.length} />}
-    />;
-}
-
 export default function DeviceLog() {
     const dbCtx = useContext(DatabaseContext);
-    const authCtx = useContext(AuthContext);
+    const [isRefreshing, setIsRefreshing] = useState(true);
+    
     useEffect(() => {
-        dbCtx.fetchDeviceLog();
         return () => {
             dbCtx.setDeviceLog([]);
-            dbCtx.setDevLogEnd(false);
         }
     }, [])
 
+    useEffect(()=>{
+        if (isRefreshing) dbCtx.fetchDeviceLog(0,()=>setIsRefreshing(false));
+    },[isRefreshing]);
+    
     const allLogs = dbCtx.deviceLog;
-
+    
     const data = [];
     for (let i = 0; i < allLogs.length;) {
         let j = i;
         const sess = [];
-        while (j < allLogss.length) {
+        while (j < allLogs.length) {
             if (new Date(allLogs[j].time).toDateString() == new Date(allLogs[i].time).toDateString()) {
                 sess.push(allLogs[j]);
                 ++j;
             }
+            else break;
         }
-        data.push(sess);
+        data.push({
+            title:new Date(allLogs[i].time).toDateString(),
+            data:sess
+        });
         i = j;
     }
     return (
         <SafeAreaView style={styles.screen}>
-
-            {/* <FlatList
-                data={data}
-                renderItem={({ item, index }) => <SessionList data={item} />}
+            <SectionList
+                sections={data}
+                renderItem={({ item, index }) => <Log {...item} index={index} />}
+                renderSectionHeader={({ section: { title } }) => (
+                    <Text style={styles.heading}>{title}</Text>
+                  )}
                 onEndReachedThreshold={0.3}
-                onEndReached={({ distanceFromEnd }) => { dbCtx.fetchDeviceLog(); }}
-            /> */}
+                onEndReached={()=>dbCtx.fetchDeviceLog()}
+                onRefresh={()=>{
+                    setIsRefreshing(true);
+                }}
+                refreshing={isRefreshing}
+            />
         </SafeAreaView>
     )
 }
@@ -119,5 +124,11 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontFamily: 'Roboto',
         fontWeight: '600'
+    },
+    heading: {
+        fontWeight: '900',
+        fontSize: 23,
+        marginVertical: 10,
+        marginLeft: 20,
     }
 })
