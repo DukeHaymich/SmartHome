@@ -1,50 +1,81 @@
-import React, { useContext, useReducer, useEffect } from 'react';
+import React, { useState, useContext, useReducer, useEffect } from 'react';
 import {
+    FlatList,
     SafeAreaView,
     StyleSheet,
     Text,
     View,
+    SectionList
 } from 'react-native';
-import { FlatList } from 'react-native-gesture-handler';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
 import { DatabaseContext } from '../scripts/DatabaseProvider';
 import { AuthContext } from '../scripts/AuthProvider';
-
 import { colors } from '../scripts/colors';
 
 function Log(props) {
-    return(
-        <View style={styles.item}>
-            <View style ={styles.icon}>
+    var time = new Date(props.time);
+    time = time.getDate() + "/" + (time.getMonth() + 1) + "/" + time.getFullYear()
+        + "  " + time.toLocaleTimeString();
+    return (
+        <View style={styles.item} >
+            <View style={styles.icon}>
                 <MaterialCommunityIcons
-                    name={props.device.toLowerCase()}
+                    name={props.icon}
                     size={60}
+                    color={colors.black}
                 />
             </View>
             <View style={props.index === (props.length - 1) ? styles.itemTextLastChild : styles.itemText}>
-                <Text style={styles.text}>Thiết bị: {props.device}</Text>
-                <Text style={styles.text}>Trạng thái: {props.status}</Text>
-                <Text style={styles.text}>Thời gian: {Date(props.time).toString()}</Text>
+                <Text style={styles.textHeader}>{props.status}</Text>
+                <Text style={styles.text}>Thời gian: {time}</Text>
             </View>
         </View>
     );
 }
 
-export default function LoginLog() {
+function SessionList(props) {
+    return <FlatList
+        data={props.data}
+        renderItem={({ item, index }) => <Log {...item} index={index} length={props.data.length} />}
+    />;
+}
+
+export default function DeviceLog() {
     const dbCtx = useContext(DatabaseContext);
     const authCtx = useContext(AuthContext);
-    useEffect(
-        () => dbCtx.fetchDeviceLog()
-        , []
-    )
-    return (
-        <SafeAreaView styles={styles.screen}>
+    useEffect(() => {
+        dbCtx.fetchDeviceLog();
+        return () => {
+            dbCtx.setDeviceLog([]);
+            dbCtx.setDevLogEnd(false);
+        }
+    }, [])
 
-            <FlatList
-                data={dbCtx.deviceLog}
-                renderItem={({ item,index}) => <Log {...item} index={index} length = {dbCtx.deviceLog.length} />}
-            />
+    const allLogs = dbCtx.deviceLog;
+
+    const data = [];
+    for (let i = 0; i < allLogs.length;) {
+        let j = i;
+        const sess = [];
+        while (j < allLogss.length) {
+            if (new Date(allLogs[j].time).toDateString() == new Date(allLogs[i].time).toDateString()) {
+                sess.push(allLogs[j]);
+                ++j;
+            }
+        }
+        data.push(sess);
+        i = j;
+    }
+    return (
+        <SafeAreaView style={styles.screen}>
+
+            {/* <FlatList
+                data={data}
+                renderItem={({ item, index }) => <SessionList data={item} />}
+                onEndReachedThreshold={0.3}
+                onEndReached={({ distanceFromEnd }) => { dbCtx.fetchDeviceLog(); }}
+            /> */}
         </SafeAreaView>
     )
 }
@@ -52,21 +83,22 @@ export default function LoginLog() {
 
 const styles = StyleSheet.create({
     screen: {
-
+        flex: 1,
+        backgroundColor: colors.background,
     },
     item: {
         paddingTop: 10,
         flexDirection: 'row',
         // backgroundColor: 'green'
     },
-    itemTextLastChild:{
+    itemTextLastChild: {
         flex: 4,
         paddingBottom: 10,
         // backgroundColor: 'blue'
     },
     itemText: {
         flex: 4,
-        borderBottomColor: '#c4c4c4',
+        borderBottomColor: colors.lightGray,
         borderBottomWidth: 1,
         paddingBottom: 10,
         // backgroundColor: 'blue',
@@ -76,7 +108,12 @@ const styles = StyleSheet.create({
         // backgroundColor: 'red',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingBottom: 10
+        paddingBottom: 10,
+        paddingHorizontal: 10,
+    },
+    textHeader: {
+        fontSize: 20,
+        fontWeight: '700',
     },
     text: {
         fontSize: 18,

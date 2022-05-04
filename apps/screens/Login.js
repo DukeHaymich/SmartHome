@@ -37,46 +37,52 @@ export default function Login() {
         // authDispatch({type: 'REMEMBER-ME'});
     }
 
+    const loginCallback = () => {
+        login(username, password).then((err) => {
+            if (err == 'invalid-email') {
+                setWarningText('Bạn nhập sai định dạng email!');
+            } else if (err == 'bad-identity') {
+                setWarningText('Email hoặc mật khẩu của bạn không hợp lệ!');
+            } else if (err == 'network-issue') {
+                setWarningText('Kết nối mạng không ổn định! Vui lòng kiểm tra lại.');
+            } else if (err == 'unhandled-exception') {
+                setWarningText('Lỗi chưa được xử lý! Hãy liên hệ nhà phát hành ứng dụng để xử lý lỗi này.');
+            }
+        });
+    }
+
     const onLoginHandler = () => {
         if (username.length == 0) {
             setWarningText('Email không được để trống!');
         } else if (password.length == 0) {
             setWarningText('Bạn chưa điền mật khẩu!');
         } else {
-            login(username, password).then((err) => {
-                if (err == 'invalid-email') {
-                    setWarningText('Bạn nhập sai định dạng email!');
-                } else if (err == 'bad-identity') {
-                    setWarningText('Email hoặc mật khẩu của bạn không hợp lệ!');
-                } else if (err == 'network-issue') {
-                    setWarningText('Kết nối mạng không ổn định! Vui lòng kiểm tra lại.');
-                } else if (err == 'unhandled-exception') {
-                    setWarningText('Lỗi chưa được xử lý! Hãy liên hệ nhà phát hành ứng dụng để xử lý lỗi này.');
-                }
-            });
+            loginCallback();
         }
     }
 
     const onUsernameFocus = () => {
         setIsFocused((prev) => ({ ...prev, username: true }));
     }
-
     const onUsernameBlur = () => {
         if (username) {
             setWarningText('');
         }
         setIsFocused((prev) => ({ ...prev, username: false }));
     }
-
     const onPasswordFocus = () => {
         setIsFocused((prev) => ({ ...prev, password: true }));
     }
-
     const onPasswordBlur = () => {
         if (password) {
             setWarningText('');
         }
         setIsFocused((prev) => ({ ...prev, password: false }));
+    }
+    const headStartLogin = () => {
+        if (username.length * password.length > 0) {
+            loginCallback();
+        }
     }
 
     return (
@@ -129,6 +135,7 @@ export default function Login() {
                         secureTextEntry={true}
                         returnKeyType='done'
                         ref={refInputPassword}
+                        onSubmitEditing={headStartLogin}
                         onFocus={onPasswordFocus}
                         onBlur={onPasswordBlur}
                         onChangeText={(value) => setPassword(value)}

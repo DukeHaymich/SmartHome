@@ -12,6 +12,8 @@ export const DatabaseContext = createContext(
         addDeviceLog: () => { },
         loginHistory: [],
         deviceLog: [],
+        setDeviceLog: () => { },
+        setDevLogEnd: () => { },
         mqttToken: {
             username: '',
             password: ''
@@ -23,6 +25,7 @@ const db = firebase.app().database('https://bk-smart-home-default-rtdb.firebasei
 export default function DatabaseProvider({ children }) {
     const [loginH, setLoginH] = useState([]);
     const [devLog, setDevLog] = useState([]);
+    const [devLogEnd, setDevLogEnd] = useState(false);
     const [mqttToken, setMqttToken] = useState({ username: "", password: "" });
 
     const fetchLoginHistoryHandler = (userId) => {
@@ -34,7 +37,6 @@ export default function DatabaseProvider({ children }) {
                 return { ip: key.split(',').join('.'), ...o[key] };
             });
             l.sort((a, b) => b.time - a.time)
-            // console.log(l)
             setLoginH(l);
         })
     }
@@ -44,7 +46,6 @@ export default function DatabaseProvider({ children }) {
             const ip = await publicIP();
             const os = await DeviceInfo.getSystemName();
             const model = await DeviceInfo.getDevice();
-            console.log([os, model].join(','))
             const response = await fetch('https://ipinfo.io/' + ip + '?token=c3e8fe3ca36e9e')
             const data = await response.json()
             await db.ref('/users/' + userId + '/loginLog').update(
@@ -57,7 +58,6 @@ export default function DatabaseProvider({ children }) {
                         os: os
                     }
                 });
-            console.log('loginLog updated')
         }
         catch (error) {
             console.log('loginLog error: ' + error);
@@ -67,21 +67,23 @@ export default function DatabaseProvider({ children }) {
     const updateLoginHistoryHandler = (userId) => {
         if (!userId) return;
         new Promise(() => updateLoginHistoryAsync(userId));
-
-        // fetchMqttTokenHandler(userId, (username, password) => console.log("username: " + username + "password: " + password));
-        // fetchLoginHistoryHandler(userId);
-        // addDeviceLogHandler({ device: "Fan", status: "ON", time: Date.now() })
-        // fetchDeviceLogHandler();
     }
 
     const fetchDeviceLogHandler = () => {
-        db.ref('/devices').once('value', snapshot => {
-            const o = snapshot.val();
-            if (!o) return;
-            const v = Object.values(o);
-            v.sort((a, b) => b.time - a.time);
-            // console.log(v);
-            setDevLog(v);
+        if (devLogEnd) return;
+        const oldLength = devLog.length;
+        const ndevLog = [];
+        db.ref('/devices').limitToLast(oldLength + 15).once('value', s => {
+            s.forEach((snapshot) => {
+                ndevLog.push(snapshot.val());
+            })
+        }).then(() => {
+            if (ndevLog.length == oldLength) {
+                setDevLogEnd(true);
+                return;
+            }
+            ndevLog.reverse();
+            setDevLog(ndevLog);
         })
     }
 
@@ -94,7 +96,6 @@ export default function DatabaseProvider({ children }) {
         if (!userId) return null;
         db.ref('/users/' + userId + '/mqttToken').once('value', snapshot => {
             const v = snapshot.val();
-            // console.log(v);
             fun(v.username, v.password);
             setMqttToken(v);
         })
@@ -108,6 +109,8 @@ export default function DatabaseProvider({ children }) {
         addDeviceLog: addDeviceLogHandler,
         loginHistory: loginH,
         deviceLog: devLog,
+        setDeviceLog: setDevLog,
+        setDevLogEnd: setDevLogEnd,
         mqttToken: mqttToken
     }
     return (

@@ -13,9 +13,12 @@ import { AuthContext } from '../scripts/AuthProvider';
 import { colors } from '../scripts/colors';
 
 function Log(props) {
+    var time = new Date(props.time);
+    time = time.getDate() + "/" + time.getMonth() + "/" + time.getFullYear()
+        + "  " + time.toLocaleTimeString();
     return (
         <View style={styles.item}>
-            <View style ={styles.icon}>
+            <View style={styles.icon}>
                 <FontAwesome
                     name={props.os == 'Android' ? 'android' : 'apple'}
                     size={70}
@@ -23,7 +26,8 @@ function Log(props) {
                 />
             </View>
             <View style={props.index === (props.length - 1) ? styles.itemTextLastChild : styles.itemText}>
-                <Text style={styles.text}>Thời gian: {Date(props.time).toString()}</Text>
+                <Text style={styles.textHeader}>{props.model}</Text>
+                <Text style={styles.text}>Thời gian: {time}</Text>
                 <Text style={styles.text}>Địa chỉ IP: {props.ip}</Text>
                 <Text style={styles.text}>Địa điểm: {props.location}</Text>
             </View>
@@ -39,12 +43,12 @@ export default function LoginLog() {
         , []
     )
     return (
-        <SafeAreaView styles={styles.screen}>
-            <Text style={{ fontWeight: '900', fontSize: 23, marginVertical: 10, marginLeft: 20 }}>Danh sách thiết bị</Text>
+        <SafeAreaView style={styles.screen}>
+            <Text style={styles.heading}>Danh sách thiết bị</Text>
             <FlatList
                 // [{ip:'144,123,222,131',location:...,time:...},....]
                 data={dbCtx.loginHistory}
-                renderItem={({ item,index }) => <Log {...item} index = {index} length = {dbCtx.loginHistory.length}/>}
+                renderItem={({ item, index }) => <Log {...item} index={index} length={dbCtx.loginHistory.length} />}
             />
         </SafeAreaView>
     )
@@ -53,17 +57,22 @@ export default function LoginLog() {
 
 const styles = StyleSheet.create({
     screen: {
-
+        flex: 1,
+        backgroundColor: colors.background,
+    },
+    heading: {
+        fontWeight: '900',
+        fontSize: 23,
+        marginVertical: 10,
+        marginLeft: 20,
     },
     item: {
         paddingTop: 10,
         flexDirection: 'row',
-        // backgroundColor: 'green'
     },
-    itemTextLastChild:{
+    itemTextLastChild: {
         flex: 4,
         paddingBottom: 10,
-        // backgroundColor: 'blue'
     },
     itemText: {
         flex: 4,
@@ -83,9 +92,12 @@ const styles = StyleSheet.create({
         // padding: 5
         // padding: 5
     },
-    text: {
+    textHeader: {
         fontSize: 18,
-        fontFamily: 'Roboto',
-        fontWeight: '600'
+        fontWeight: '700'
+    },
+    text: {
+        fontSize: 16,
+        fontWeight: '500'
     }
 })

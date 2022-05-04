@@ -54,7 +54,6 @@ export default function FraudDetector() {
                     title: 'Không có kết nối!',
                 });
             }
-            console.log(tryTime);
         }
     }, [tryTime]);
 

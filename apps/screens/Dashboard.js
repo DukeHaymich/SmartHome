@@ -7,11 +7,12 @@ import {
     Text,
     View,
     useWindowDimensions,
+    TouchableOpacity
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import LinearGradient from 'react-native-linear-gradient';
 import Tooltip from 'react-native-walkthrough-tooltip';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { NumericCard, ControllerCard } from '../components/Card';
 import { MQTTContext } from '../scripts/MQTTProvider';
@@ -38,6 +39,7 @@ export default function Dashboard({ navigation }) {
     const [sectorColor, setSectorColor] = useState('rgba(0, 0, 0, 1)');
     const [checkData, setCheckData] = useState(false);
     const [tryFlag, setTryFlag] = useState(false);
+    const [dotStroke, setDotStroke] = useState('white');
 
     const devices = [
         {
@@ -61,8 +63,10 @@ export default function Dashboard({ navigation }) {
         }
         if (gas.data[gas.data.length - 1] >= 40) {
             setSectorColor('rgba(255, 0, 0, 1)');
+            setDotStroke('red');
         } else {
             setSectorColor('rgba(255, 255, 255, 1)');
+            setDotStroke('white');
         }
     }, [gas]);
 
@@ -89,11 +93,9 @@ export default function Dashboard({ navigation }) {
             setTimeout(() => {
                 setTryFlag((prev) => !prev)
             }, 20000);
-            console.log(tryFlag);
         }
     }, [tryFlag]);
     // const [openTool, setOpenTool] = useState(false);
-    const [dotStroke, setDotStroke] = useState('white');
     const colorController = [colors.neonRed, '#00ab00'];
     return (
         <SafeAreaView style={styles.container}>
@@ -104,11 +106,23 @@ export default function Dashboard({ navigation }) {
                 angle={180}
                 angleCenter={{ x: 0, y: 0.7 }}
             >
-                <View style={{ marginVertical: 5, marginHorizontal: 10 }}>
-                    <Text style={[styles.headerText, { opacity: 0.5 }]}>Xin chào!</Text>
-                    <Text style={[styles.headerText, { fontWeight: '700', fontSize: 23 }]}>
-                        Sơn Đại Gia
-                    </Text>
+                <View style={{ flexDirection: 'row' }}>
+                    <View style={{ marginVertical: 5, marginHorizontal: 10, flex: 2 }}>
+                        <Text style={[styles.headerText, { opacity: 0.5 }]}>Xin chào!</Text>
+                        <Text style={[styles.headerText, { fontWeight: '700', fontSize: 23 }]}>
+                            Sơn Đại Gia
+                        </Text>
+                    </View>
+                    <TouchableOpacity style={{ flex: 3, marginRight: 20, alignItems: 'flex-end', justifyContent: 'center' }}>
+                        <View style={{ flexDirection: 'column' }}>
+                            <Text >Chuông báo cháy</Text>
+                            <MaterialCommunityIcons
+                                style={{ alignSelf: 'center' }}
+                                name={'bell-alert-outline'}
+                                size={30}
+                            />
+                        </View>
+                    </TouchableOpacity>
                 </View>
 
                 <View style={styles.visualNumericData}>
@@ -123,7 +137,7 @@ export default function Dashboard({ navigation }) {
                     <Text
                         style={[
                             styles.headerText,
-                            { alignSelf: 'center', fontSize: 28, color: colors.BKLightBlue },
+                            { fontSize: 28, color: colors.BKLightBlue, alignSelf: 'center' },
                         ]}>
                         Nồng độ khí gas
                     </Text>
@@ -172,11 +186,9 @@ export default function Dashboard({ navigation }) {
                         }}
                         getDotColor={dataPoint => {
                             if (dataPoint >= 40) {
-                                setDotStroke('red');
                                 return 'red';
 
                             } else {
-                                setDotStroke('white');
                                 return 'white';
                             }
                         }}

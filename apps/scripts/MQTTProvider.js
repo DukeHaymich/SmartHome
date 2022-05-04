@@ -1,12 +1,13 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState, useContext } from 'react';
 // import { Alert } from 'react-native';
-
+import { DatabaseContext } from './DatabaseProvider';
 import MqttService from '../core/services/MqttService';
 
 /* Authentication */
 export const MQTTContext = createContext();
 
 export default function MQTTProvider({ children }) {
+    const dbCtx = useContext(DatabaseContext);
     const [today, setToday] = useState(new Date());
     const [temperature, setTemperature] = useState({
         id: 0,
@@ -26,6 +27,10 @@ export default function MQTTProvider({ children }) {
         time: [today.toLocaleTimeString()],
         unit: '%',
     });
+    const [fireDetector, setFireDetector] = useState({
+        title: 'Đang tải...',
+        isOn: null,
+    })
     const [doorLock, setDoorLock] = useState({
         title: 'Đang tải...',
         isOn: null,
@@ -80,11 +85,26 @@ export default function MQTTProvider({ children }) {
             return newState;
         });
     };
-    const onFireDetectorTopic = message => {
-        // topicHelper(updateF, message);
-    };
     const onFireAlarmTopic = message => {
         // topicHelper(updateF, message);
+    };
+    const onFireDetectorTopic = message => {
+        setFireDetector((state) => {
+            var newState = state;
+            if (message == 1) {
+                newState = {
+                    title: 'Đang hoạt động',
+                    isOn: 1,
+                }
+            }
+            else if (message == 0) {
+                newState = {
+                    title: 'Đang tắt',
+                    isOn: 0,
+                }
+            }
+            return newState;
+        });
     };
     const onDoorLockTopic = message => {
         setDoorLock((state) => {
@@ -166,10 +186,31 @@ export default function MQTTProvider({ children }) {
     };
 
     const publishDoorLock = (data) => {
+        const obj = {
+            icon: 'door-closed-lock',
+            status: (data) ? "Mở khóa cửa" : "Đóng khóa cửa",
+            time: Date.now(),
+        };
+        dbCtx.addDeviceLog(obj);
         MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate', data.toString());
     }
     const publishFraudDetector = (data) => {
+        const obj = {
+            icon: 'alarm-bell',
+            status: (data) ? "Bật chống trộm" : "Tắt chống trộm",
+            time: Date.now(),
+        };
+        dbCtx.addDeviceLog(obj);
         MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfraudbuzzer', data.toString());
+    }
+    const publishFireDetector = (data) => {
+        const obj = {
+            icon: 'fire-alert',
+            status: (data) ? "Bật báo cháy" : "Tắt báo cháy",
+            time: Date.now(),
+        };
+        dbCtx.addDeviceLog(obj);
+        MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfirebuzzer', data.toString());
     }
 
     const mqttConnectionLostHandler = () => {
@@ -199,7 +240,7 @@ export default function MQTTProvider({ children }) {
                 if (MqttService && !MqttService.isConnected) {
                     MqttService.connect(mqttSuccessHandler, mqttConnectionLostHandler, username, password);
                 }
-            }, 5000);
+            }, 10000);
             return;
         }
     }

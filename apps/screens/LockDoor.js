@@ -42,7 +42,6 @@ export default function LockDoor() {
                     title: 'Không có kết nối!',
                 });
             }
-            console.log(tryTime);
         }
     }, [tryTime]);
     const iconHomeLock = ['home-lock-open', 'home-lock'];
