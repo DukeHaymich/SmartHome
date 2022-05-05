@@ -85,7 +85,8 @@ const styles = StyleSheet.create({
         color: colors.BKLightBlue,
         fontFamily: 'Nunito-Medium',
         fontSize: 28,
-        marginLeft: 20
+        fontWeight: '700',
+        marginLeft: 20,
     },
     content: {
         justifyContent: 'center',

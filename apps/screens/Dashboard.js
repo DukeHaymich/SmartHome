@@ -65,8 +65,8 @@ export default function Dashboard({ navigation }) {
             setSectorColor('rgba(255, 0, 0, 1)');
             setDotStroke('red');
         } else {
-            setSectorColor('rgba(255, 255, 255, 1)');
-            setDotStroke('white');
+            setSectorColor(colors.BKDarkBlue);//'rgba(255, 255, 255, 1)');
+            setDotStroke(colors.BKDarkBlue);
         }
     }, [gas]);
 
@@ -137,7 +137,7 @@ export default function Dashboard({ navigation }) {
                     <Text
                         style={[
                             styles.headerText,
-                            { fontSize: 28, color: colors.BKLightBlue, alignSelf: 'center' },
+                            { fontSize: 28, fontWeight: '700', color: colors.BKLightBlue, alignSelf: 'center', width: screen.width * 0.9, textAlign: 'left', paddingBottom: 10, },
                         ]}>
                         Nồng độ khí gas
                     </Text>
@@ -160,15 +160,15 @@ export default function Dashboard({ navigation }) {
                         yAxisInterval={6} // optional, defaults to 1
                         chartConfig={{
                             // backgroundColor: "#e26a00",
-                            backgroundGradientFrom: '#389FFF',
-                            backgroundGradientTo: '#389FFF',
+                            backgroundGradientFrom: '#AAD2FF', //'#389FFF',
+                            backgroundGradientTo: '#AAD2FF', //'#389FFF',
                             decimalPlaces: 0, // optional, defaults to 2dp
                             color: () => sectorColor,
-                            labelColor: (opacity = 1) => `rgba(11, 65 , 115, ${opacity})`,
-                            style: {
-                                borderRadius: 16,
+                            labelColor: (opacity = 1) => `rgba(0, 60, 215, ${opacity})`,
+                            // style: {
+                            //     borderRadius: 16,
 
-                            },
+                            // },
                             propsForDots: {
                                 r: '6',
                                 strokeWidth: '2',
@@ -189,7 +189,7 @@ export default function Dashboard({ navigation }) {
                                 return 'red';
 
                             } else {
-                                return 'white';
+                                return colors.BKDarkBlue;//'white';
                             }
                         }}
                         // renderDotContent={(x, y, index, indexData) => {
@@ -209,7 +209,7 @@ export default function Dashboard({ navigation }) {
                         fromZero={checkData}
                         style={{
                             // marginVertical: 8,
-                            borderRadius: 16,
+                            borderRadius: 12,
                             alignSelf: 'center',
                             marginTop: -25,
                             paddingTop: 25,

@@ -40,20 +40,20 @@ class MqttService {
         this.username = username ?? this.username;
         this.password = password ?? this.password;
 
-        // this.client.connect({
-        //     timeout: 10,
-        //     onSuccess: () => {
-        //         this.isConnected = true;
-        //         onSuccessHandler();
-        //     },
-        //     useSSL: true,
-        //     onFailure: this.onFailure,
-        //     reconnect: true,
-        //     keepAliveInterval: 20,
-        //     cleanSession: true,
-        //     userName: this.username,
-        //     password: this.password
-        // });
+        this.client.connect({
+            timeout: 10,
+            onSuccess: () => {
+                this.isConnected = true;
+                onSuccessHandler();
+            },
+            useSSL: true,
+            onFailure: this.onFailure,
+            reconnect: true,
+            keepAliveInterval: 20,
+            cleanSession: true,
+            userName: this.username,
+            password: this.password
+        });
     };
 
     disconnect = () => {

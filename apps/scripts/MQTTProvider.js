@@ -8,7 +8,6 @@ export const MQTTContext = createContext();
 
 export default function MQTTProvider({ children }) {
     const dbCtx = useContext(DatabaseContext);
-    const [today, setToday] = useState(new Date());
     const [temperature, setTemperature] = useState({
         id: 0,
         title: 'Nhiệt độ',
@@ -24,7 +23,7 @@ export default function MQTTProvider({ children }) {
     const [gas, setGas] = useState({
         title: 'Nồng độ khí ga',
         data: [0],
-        time: [today.toLocaleTimeString()],
+        time: [new Date().toLocaleTimeString('en-US', { hour12: false })],
         unit: '%',
     });
     const [fireDetector, setFireDetector] = useState({
@@ -41,6 +40,10 @@ export default function MQTTProvider({ children }) {
         isOn: null,
     });
     const [fraudWarning, setFraudWarning] = useState({
+        title: 'Đang tải...',
+        isOn: null,
+    })
+    const [fireWarning, setFireWarning] = useState({
         title: 'Đang tải...',
         isOn: null,
     })
@@ -73,8 +76,7 @@ export default function MQTTProvider({ children }) {
     const onGasTopic = message => {
         setGas((state) => {
             var newState = JSON.parse(JSON.stringify(state));
-            setToday(new Date());
-            var time = today.toLocaleTimeString();
+            var time = new Date().toLocaleTimeString('en-US', { hour12: false });
             var data = Math.round((parseInt(message) / 1023) * 1000 + Number.EPSILON) / 10;
             if (newState.data.length >= 5) {
                 newState.data.shift();
@@ -86,7 +88,24 @@ export default function MQTTProvider({ children }) {
         });
     };
     const onFireAlarmTopic = message => {
-        // topicHelper(updateF, message);
+        setFireWarning((state) => {
+            var newState = state;
+            if (message == 1) {
+                newState = {
+                    ...state,
+                    title: 'Vượt ngưỡng cho phép!',
+                    isOn: 1,
+                }
+            }
+            else if (message == 0) {
+                newState = {
+                    ...state,
+                    title: 'Bình thường',
+                    isOn: 0,
+                }
+            }
+            return newState;
+        });
     };
     const onFireDetectorTopic = message => {
         setFireDetector((state) => {
@@ -147,7 +166,7 @@ export default function MQTTProvider({ children }) {
             if (message == 1) {
                 newState = {
                     ...state,
-                    title: 'Có dấu hiệu đột nhập',
+                    title: 'Có dấu hiệu đột nhập!',
                     isOn: 1,
                 }
             }
@@ -166,8 +185,8 @@ export default function MQTTProvider({ children }) {
         MqttService.publishMessage('duke_and_co/feeds/visual-igas/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/visual-ftemp/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/visual-ihumid/get', 'duke_n_co');
-        // MqttService.publishMessage('duke_and_co/feeds/visual-bwarningfire/get', 'duke_n_co');
-        // MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfirebuzzer/get', 'duke_n_co');
+        MqttService.publishMessage('duke_and_co/feeds/visual-bwarningfire/get', 'duke_n_co');
+        MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfirebuzzer/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/action-bctrllockstate/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/visual-bwarningfraud/get', 'duke_n_co');
         MqttService.publishMessage('duke_and_co/feeds/action-bnotifyfraudbuzzer/get', 'duke_n_co');
@@ -177,8 +196,8 @@ export default function MQTTProvider({ children }) {
         MqttService.subscribe('duke_and_co/feeds/visual-ftemp', onTemperatureTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-ihumid', onHumidityTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-igas', onGasTopic);
-        // MqttService.subscribe('duke_and_co/feeds/visual-bwarningfire', onFireAlarmTopic);
-        // MqttService.subscribe('duke_and_co/feeds/action-bnotifyfirebuzzer', onFireDetectorTopic);
+        MqttService.subscribe('duke_and_co/feeds/visual-bwarningfire', onFireAlarmTopic);
+        MqttService.subscribe('duke_and_co/feeds/action-bnotifyfirebuzzer', onFireDetectorTopic);
         MqttService.subscribe('duke_and_co/feeds/action-bctrllockstate', onDoorLockTopic);
         MqttService.subscribe('duke_and_co/feeds/visual-bwarningfraud', onFraudAlarmTopic);
         MqttService.subscribe('duke_and_co/feeds/action-bnotifyfraudbuzzer', onFraudDetectorTopic);
@@ -263,8 +282,10 @@ export default function MQTTProvider({ children }) {
                 fraudDetector: fraudDetector,
                 setFraudDetector: setFraudDetector,
                 fraudWarning: fraudWarning,
+                fireWarning: fireWarning,
                 publishDoorLock: publishDoorLock,
                 publishFraudDetector: publishFraudDetector,
+                publishFireDetector: publishFireDetector,
                 fetchLatestData: fetchLatestData,
                 connect: connect,
                 disconnect: disconnect,
