@@ -276,7 +276,7 @@ export default function MQTTProvider({ children }) {
         }
     }
     const handlePress = () => {
-        if(fraudDetector.isOn == 1){
+        if(fraudWarning.isOn == 1){
             publishFraudDetector(0);
         }
         else {
@@ -315,12 +315,12 @@ export default function MQTTProvider({ children }) {
                 <View style={styles.container}>
                     <View style = {styles.warningZone}>
                         <View style = {styles.title}>
-                            <Text style = {styles.textTitle}>{fraudDetector.isOn == 1 ? 'Có trộm đột nhập' : 'Đang có hỏa hoạn'}</Text>
+                            <Text style = {styles.textTitle}>{fraudWarning.isOn == 1 ? 'Có trộm đột nhập' : 'Đang có hỏa hoạn'}</Text>
                         </View>
                         <View style = {styles.body}>
                             <Text style = {[styles.text,{textAlign: 'justify',marginBottom: 10}]}>Hãy bình tĩnh và gọi điện cho cơ quan gần nhất nhờ trợ giúp.</Text>
                             <Text style = {[styles.text,{textAlign: 'justify'}]}><Text style = {[styles.text,{fontWeight: '700'}]}>Lưu ý: </Text>
-                                Sau khi ấn 'Đã hiểu', hệ thống tự động tắt thiết bị {fraudDetector.isOn == 1 ? 'Chống trộm' : 'Báo cháy'}. 
+                                Sau khi ấn 'Đã hiểu', hệ thống tự động tắt thiết bị {fraudWarning.isOn == 1 ? 'Chống trộm' : 'Báo cháy'}. 
                                 Xin vui lòng kiểm tra trước khi bật lại thiết bị.
                             </Text>  
                         </View>

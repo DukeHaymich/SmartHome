@@ -7,7 +7,7 @@ import {
     Text,
     View,
     useWindowDimensions,
-    TouchableOpacity
+    TouchableOpacity,
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import LinearGradient from 'react-native-linear-gradient';
