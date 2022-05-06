@@ -30,6 +30,7 @@ export default function Login() {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [warningText, setWarningText] = useState("");
+    const [disabledButton, setDisabledButton] = useState(false);
     const refInputUsername = useRef();
     const refInputPassword = useRef();
 
@@ -48,6 +49,7 @@ export default function Login() {
             } else if (err == 'unhandled-exception') {
                 setWarningText('Lỗi chưa được xử lý! Hãy liên hệ nhà phát hành ứng dụng để xử lý lỗi này.');
             }
+            setDisabledButton(false);
         });
     }
 
@@ -81,6 +83,7 @@ export default function Login() {
     }
     const headStartLogin = () => {
         if (username.length * password.length > 0) {
+            setDisabledButton(true);
             loginCallback();
         }
     }
@@ -133,7 +136,7 @@ export default function Login() {
                         placeholder='Nhập mật khẩu...'
                         placeholderTextColor={isFocused.password ? colors.lightGray : colors.lightGray}
                         secureTextEntry={true}
-                        returnKeyType='done'
+                        returnKeyType='go'
                         ref={refInputPassword}
                         onSubmitEditing={headStartLogin}
                         onFocus={onPasswordFocus}
@@ -164,8 +167,9 @@ export default function Login() {
                 <TouchableOpacity
                     style={styles.button}
                     activeOpacity={0.6}
-                    onPress={onLoginHandler}>
-
+                    onPress={onLoginHandler}
+                    disabled={disabledButton}
+                >
                     <Text style={styles.labelButton}>
                         ĐĂNG NHẬP
                     </Text>

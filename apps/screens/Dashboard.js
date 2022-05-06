@@ -11,7 +11,8 @@ import {
 } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import LinearGradient from 'react-native-linear-gradient';
-import Tooltip from 'react-native-walkthrough-tooltip';
+// import Tooltip from 'react-native-walkthrough-tooltip';
+import Snackbar from 'react-native-snackbar';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { NumericCard, ControllerCard } from '../components/Card';
@@ -25,6 +26,7 @@ export default function Dashboard({ navigation }) {
     const {
         doorLock,
         fraudDetector,
+        fireDetector,
         temperature,
         humidity,
         gas,
@@ -32,6 +34,7 @@ export default function Dashboard({ navigation }) {
         connect,
         isConnected,
         disconnect,
+        publishFireDetector
     } = useContext(MQTTContext);
     const dbCtx = useContext(DatabaseContext);
     const authCtx = useContext(AuthContext);
@@ -96,9 +99,40 @@ export default function Dashboard({ navigation }) {
         }
     }, [tryFlag]);
     // const [openTool, setOpenTool] = useState(false);
-    const colorController = [colors.neonRed, '#00ab00'];
+    const colorController = [colors.neonRed, colors.neonGreenDark];
+    const handlePress = () => {
+        if (fireDetector.isOn){
+            Alert.alert(
+                "Tắt thiết bị báo cháy",
+                "Bạn có thật sự muốn tắt thiết bị báo cháy không ?",
+                [
+                  {
+                    text: "Hủy",
+                    style: "cancel"
+                  },
+                  { text: "Đồng ý", onPress: turnOffFire}
+                ]
+            );
+        }else{
+            publishFireDetector(1);
+            Snackbar.show({
+                text: 'Mở thiết bị báo cháy thành công',
+                duration: Snackbar.LENGTH_SHORT,
+                backgroundColor: colors.neonGreenDark,
+            });
+        }
+    }
+    const turnOffFire = () => {
+        publishFireDetector(0);
+        Snackbar.show({
+            text: 'Tắt thiết bị báo cháy thành công',
+            duration: Snackbar.LENGTH_SHORT,
+            backgroundColor: colors.neonGreenDark,
+        });
+    }
     return (
         <SafeAreaView style={styles.container}>
+
             <LinearGradient
                 colors={[colors.background, colors.backgroundMedium]}
                 style={styles.container}
@@ -106,25 +140,12 @@ export default function Dashboard({ navigation }) {
                 angle={180}
                 angleCenter={{ x: 0, y: 0.7 }}
             >
-                <View style={{ flexDirection: 'row' }}>
-                    <View style={{ marginVertical: 5, marginHorizontal: 10, flex: 2 }}>
-                        <Text style={[styles.headerText, { opacity: 0.5 }]}>Xin chào!</Text>
-                        <Text style={[styles.headerText, { fontWeight: '700', fontSize: 23 }]}>
-                            Sơn Đại Gia
-                        </Text>
-                    </View>
-                    <TouchableOpacity style={{ flex: 3, marginRight: 20, alignItems: 'flex-end', justifyContent: 'center' }}>
-                        <View style={{ flexDirection: 'column' }}>
-                            <Text >Chuông báo cháy</Text>
-                            <MaterialCommunityIcons
-                                style={{ alignSelf: 'center' }}
-                                name={'bell-alert-outline'}
-                                size={30}
-                            />
-                        </View>
-                    </TouchableOpacity>
+                <View style={{ marginVertical: 5, marginHorizontal: 10}}>
+                    <Text style={[styles.headerText, { opacity: 0.5 }]}>Xin chào!</Text>
+                    <Text style={[styles.headerText, { fontWeight: '700', fontSize: 23 }]}>
+                        Sơn Đại Gia
+                    </Text>
                 </View>
-
                 <View style={styles.visualNumericData}>
                     <FlatList
                         data={[temperature, humidity]}
@@ -134,13 +155,29 @@ export default function Dashboard({ navigation }) {
                     />
                 </View>
                 <View style={styles.graph}>
-                    <Text
-                        style={[
-                            styles.headerText,
-                            { fontSize: 28, fontWeight: '700', color: colors.BKLightBlue, alignSelf: 'center', width: screen.width * 0.9, textAlign: 'left', paddingBottom: 10, },
-                        ]}>
-                        Nồng độ khí gas
-                    </Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text
+                            style={[
+                                styles.headerText,
+                                { marginLeft: 20,flex: 3,fontSize: 28, fontWeight: '700', color: colors.BKLightBlue, alignSelf: 'center', width: screen.width * 0.9, textAlign: 'left', paddingBottom: 10, },
+                            ]}>
+                            Nồng độ khí gas
+                        </Text>
+                        <TouchableOpacity 
+                            style={styles.fireBtn}
+                            onPress={handlePress}
+                        >
+                            <View style={{ flexDirection: 'row', alignItems: 'center', paddingBottom: 5}}>
+                                <MaterialCommunityIcons
+                                    style={{ alignSelf: 'center', paddingRight: 5}}
+                                    name={'bell-outline'}
+                                    size={30}
+                                    color={fireDetector.isOn? colors.neonGreenDark : colors.neonRed}
+                                />
+                                <Text style = {{fontSize: 19, fontWeight: '900',fontFamily: 'Nunito-Medium',color: fireDetector.isOn? colors.neonGreenDark : colors.neonRed}}>Báo cháy</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
                     <LineChart
                         // onDataPointClick={({value, getColor}) => {
                         //     setOpenTool(true);
@@ -269,4 +306,10 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginLeft: 10,
     },
+    fireBtn: {
+        flex: 2, 
+        marginRight: 20,  
+        justifyContent: 'center',
+        alignItems: 'flex-end'
+    }
 });

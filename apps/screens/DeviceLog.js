@@ -75,7 +75,10 @@ export default function DeviceLog() {
                     <Text style={styles.heading}>{title}</Text>
                   )}
                 onEndReachedThreshold={0.3}
-                onEndReached={()=>dbCtx.fetchDeviceLog()}
+                onEndReached={()=>{
+                    setIsRefreshing(true);
+                    dbCtx.fetchDeviceLog(15,()=>setIsRefreshing(false))
+                }}
                 onRefresh={()=>{
                     setIsRefreshing(true);
                 }}
@@ -130,5 +133,6 @@ const styles = StyleSheet.create({
         fontSize: 23,
         marginVertical: 10,
         marginLeft: 20,
+        color: colors.BKDarkBlue
     }
 })

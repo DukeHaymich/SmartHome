@@ -9,6 +9,7 @@ export const colors = {
     lightGray: '#A4A4A4',
     darkGray: '#333',
     neonGreen: '#1DFF1D',
+    neonGreenDark: '#00ab00',
     neonRed: '#B30600',
     white: '#fcfcfc',
     black: '#000',
