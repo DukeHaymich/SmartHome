@@ -14,7 +14,7 @@ export const DatabaseContext = createContext(
         loginHistory: [],
         deviceLog: [],
         setDeviceLog: () => { },
-        setLoginHistory: ()=>{},
+        setLoginHistory: () => { },
         mqttToken: {
             username: '',
             password: ''
@@ -28,9 +28,9 @@ export default function DatabaseProvider({ children }) {
     const [devLog, setDevLog] = useState([]);
     const [mqttToken, setMqttToken] = useState({ username: "", password: "" });
 
-    const fetchLoginHistoryHandler = (userId,fun=null) => {
+    const fetchLoginHistoryHandler = (userId, fun = null) => {
         db.ref('/users/' + userId + '/loginLog').once('value', snapshot => {
-            if (fun!=null) fun();
+            if (fun != null) fun();
             const o = snapshot.val();
             if (!o) return;
             const l = Object.keys(o).map(key => {
@@ -69,15 +69,15 @@ export default function DatabaseProvider({ children }) {
         new Promise(() => updateLoginHistoryAsync(userId));
     }
 
-    const fetchDeviceLogHandler = (addMore=15,fun=null) => {
+    const fetchDeviceLogHandler = (addMore = 15, fun = null) => {
         const oldLength = devLog.length;
         const ndevLog = [];
-        db.ref('/devices').limitToLast(Math.max(15,oldLength+addMore)).once('value', s => {
+        db.ref('/devices').limitToLast(Math.max(15, oldLength + addMore)).once('value', s => {
             s.forEach((snapshot) => {
                 ndevLog.push(snapshot.val());
             })
         }).then(() => {
-            if (fun!=null)fun();
+            if (fun != null) fun();
             if (ndevLog.length == oldLength) {
                 return;
             }
@@ -88,7 +88,7 @@ export default function DatabaseProvider({ children }) {
 
     const addDeviceLogHandler = (log) => {
         const newReference = db.ref('/devices').push();
-        newReference.set(log).then(() => console.log('deviceLog updated'));
+        newReference.set(log);
     }
 
     const fetchMqttTokenHandler = (userId, fun) => {

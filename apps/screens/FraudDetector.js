@@ -28,12 +28,8 @@ export default function FraudDetector() {
 
 
     const toggleOnOff = () => {
-        var data = (1 - fraudDetector.isOn);
-        publishFraudDetector(data);
+        publishFraudDetector(1 - fraudDetector.isOn);
     }
-
-    const handleAuto = () => { }
-
 
     useEffect(() => {
         try {

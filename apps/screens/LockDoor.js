@@ -49,8 +49,7 @@ export default function LockDoor() {
     const gradColorOn = [colors.buttonOn, colors.buttonOnLight];
     const gradColorOff = [colors.buttonOff, colors.buttonOffLight];
     const handlePress = () => {
-        var data = (1 - status.isOn).toString();
-        publishDoorLock(data);
+        publishDoorLock(1 - status.isOn);
     }
     return (
         <SafeAreaView style={styles.container}>
