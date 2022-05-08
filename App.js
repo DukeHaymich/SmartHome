@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { setCustomText } from 'react-native-global-props';
 import { LogBox } from 'react-native';
 import Toast, { BaseToast } from 'react-native-toast-message';
+import 'react-native-gesture-handler';
 
 import Routes from './apps/routes/Routes';
 import Splash from './apps/screens/Splash';

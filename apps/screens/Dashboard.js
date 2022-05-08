@@ -12,7 +12,6 @@ import {
 import { LineChart } from 'react-native-chart-kit';
 import LinearGradient from 'react-native-linear-gradient';
 // import Tooltip from 'react-native-walkthrough-tooltip';
-import Snackbar from 'react-native-snackbar';
 import Toast from 'react-native-toast-message';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -115,13 +114,6 @@ export default function Dashboard({ navigation }) {
                 ]
             );
         } else {
-            publishFireDetector(1);
-            // Snackbar.show({
-            //     text: 'Mở thiết bị báo cháy thành công',
-            //     duration: Snackbar.LENGTH_SHORT,
-            //     backgroundColor: colors.neonGreenDark,
-            //     position: 'top',
-            // });
             Toast.show({
                 type: 'success',
                 text1: 'Thông tin',
@@ -131,13 +123,6 @@ export default function Dashboard({ navigation }) {
         }
     }
     const turnOffFire = () => {
-        publishFireDetector(0);
-        // Snackbar.show({
-        //     text: 'Tắt thiết bị báo cháy thành công',
-        //     duration: Snackbar.LENGTH_SHORT,
-        //     backgroundColor: colors.neonGreenDark,
-        //     position: "top",
-        // });
         Toast.show({
             type: 'success',
             text1: 'Thông tin',
